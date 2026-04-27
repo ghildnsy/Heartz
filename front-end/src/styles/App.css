@@ -1,0 +1,15 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app__main {
+  flex: 1;
+  background: #f8fafc;
+  transition: background-color 0.3s ease;
+}
+
+.dark .app__main {
+  background: #0f172a;
+}
