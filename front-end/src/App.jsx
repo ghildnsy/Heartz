@@ -9,9 +9,9 @@ function App() {
   return (
     <ThemeProvider>
       <BrowserRouter>
-        <div className="app">
+        <div className="flex min-h-screen flex-col">
           <Navbar />
-          <main className="app__main">
+          <main className="flex-1 bg-slate-50 transition-colors duration-300 ease-[ease] dark:bg-slate-900">
             <Routes>
               <Route path="/home" element={<HomePage />} />
               <Route path="/practice" element={<PracticePage />} />
