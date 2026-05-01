@@ -15,15 +15,14 @@ function FilterTabs({ activeFilter, onFilterChange }) {
             key={tab.key}
             id={`filter-tab-${tab.key}`}
             type="button"
-            className={[
-              'cursor-pointer rounded-full border-[1.5px] px-[1.4rem] py-[0.55rem] text-[0.88rem] font-medium transition-all duration-200 ease-[ease]',
-              'bg-white text-slate-500 border-slate-200 hover:border-slate-400 hover:bg-slate-50 hover:text-slate-700',
-              'dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 dark:hover:border-slate-500 dark:hover:bg-slate-700 dark:hover:text-slate-100',
-              isActive
-                ? 'border-transparent bg-gradient-to-br from-primary-400 to-primary-300 text-white shadow-primary-md dark:shadow-primary-md-strong'
-                : '',
-            ].join(' ')}
             onClick={() => onFilterChange(tab.key)}
+            className={[
+              'cursor-pointer rounded-full border-[1.5px] px-6 py-2 text-[0.88rem] font-medium transition-colors',
+              'font-sans',
+              isActive
+                ? 'border-transparent bg-gradient-to-br from-primary-400 to-primary-300 text-white shadow-[0_2px_10px_rgba(108,140,255,0.3)] dark:shadow-[0_2px_10px_rgba(108,140,255,0.5)]'
+                : 'border-slate-200 bg-white text-slate-500 hover:border-slate-400 hover:bg-slate-50 hover:text-slate-700 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-300 dark:hover:border-slate-500 dark:hover:bg-slate-700/60 dark:hover:text-slate-50',
+            ].join(' ')}
           >
             {tab.label}
           </button>
