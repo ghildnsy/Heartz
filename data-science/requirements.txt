@@ -1,0 +1,29 @@
+# ============================================
+# Heartz Project - Data Science Dependencies
+# ============================================
+# Install: pip install -r requirements.txt
+
+# --- Core Data Science ---
+numpy>=1.26.0
+pandas>=2.1.0
+
+# --- Audio Processing ---
+librosa>=0.10.0
+soundfile>=0.12.0
+pydub>=0.25.1
+scipy>=1.11.0
+audiomentations>=0.36.0
+
+# --- YouTube Scraping ---
+yt-dlp>=2024.0.0
+
+# --- Visualization & EDA ---
+matplotlib>=3.8.0
+seaborn>=0.13.0
+IPython>=8.0.0
+
+# --- Utilities ---
+tqdm>=4.66.0
+
+# --- Jupyter ---
+ipykernel>=6.25.0

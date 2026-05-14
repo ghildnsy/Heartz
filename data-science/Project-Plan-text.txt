@@ -1,0 +1,456 @@
+ 
+Dokumen Project Plan 
+Coding Camp 2026 powered by DBS Foundation 
+ 
+ID Tim Capstone Project​: CC26-PSU064 
+Tema Capstone​
+​
+: Accessible & Adaptive Learning 
+Nama/Judul Proyek​
+: Heartz 
+List Anggota​
+​
+:  
+1.​ CDCC282D6Y1011 - Rafi Geovazi - Data Scientist - [Aktif] 
+2.​ CFCC282D6Y1068 - Muhammad Isra Al Fattah - Full-Stack Web Developer - 
+[Aktif] 
+3.​ CACC296D6Y1225 - Ghildan Syarif Ayatullah - AI Engineer - [Aktif] 
+4.​ CACC459D6Y2204 - Rendy Elang Lesmana - AI Engineer - [Aktif] 
+5.​ CDCC282D6Y2676 - Dafin Surya - Data Scientist - [Aktif] 
+6.​ CFCC282D6Y2841 - Carel Habsian Osagi - Full-Stack Web Developer - [Aktif] 
+ 
+A.​Ringkasan Eksekutif 
+Keterbatasan akses dan tingginya biaya terapi wicara profesional menjadi 
+hambatan utama bagi penyandang disabilitas rungu (Tuli) untuk melatih 
+artikulasi lisan secara konsisten. Pada terapi konvensional, teman Tuli sangat 
+mengandalkan umpan balik visual untuk meniru bentuk mulut terapis. Namun, 
+ketiadaan indra pendengaran membuat mereka kesulitan memvalidasi apakah 
+getaran pita suara dan bentuk rahang mereka telah menghasilkan frekuensi 
+suara yang tepat, khususnya saat merangkai konsonan dan vokal menjadi suku 
+kata dasar.  
+Oleh karena itu, proyek Heartz hadir sebagai sebuah painkiller dalam 
+bentuk Sistem Visualisasi Artikulasi berbasis audio. Hal ini memunculkan 
+Problem Statement, diantaranya bagaimana (How) kita bisa menyediakan alat 
+terapi wicara mandiri yang terjangkau bagi Sahabat Tuli (Who), di lingkungan 
+rumah (Where), kapan saja mereka butuhkan (When), untuk membantu mereka 
+menyesuaikan volume suara dan artikulasi secara akurat (What), guna 
+meningkatkan kepercayaan diri dalam berkomunikasi (Why?). 
+ 
+
+ 
+Research Question utama dalam proyek ini adalah Bagaimana arsitektur 
+model Convolutional Neural Network (CNN) 2D dapat mengklasifikasikan fonem 
+vokal dan suku kata dasar bahasa Indonesia secara presisi dengan tingkat 
+akurasi 85% berdasarkan ekstraksi fitur visual Mel-Spectrogram, guna 
+memberikan feedback korektif secara real-time. 
+Tim kami memilih proyek ini karena Heartz menawarkan inovasi yang 
+tepat guna. Sistem ini murni menganalisis gelombang frekuensi suara fisik 
+pengguna tanpa melibatkan pelacakan wajah (Face Tracking) berbasis kamera. 
+Jika pelafalan suku kata melenceng dari target frekuensi, AI akan mendiagnosis 
+tingkat kesalahannya dan menampilkan panduan animasi visual pada layar. 
+Dengan demikian, platform ini memberdayakan penyandang disabilitas rungu 
+untuk melakukan repetisi latihan wicara mandiri dengan validasi diagnostik yang 
+akurat serta privasi pengguna yang tetap terjaga. 
+ 
+B.​Cakupan Proyek dan Hasil Kerja 
+Cakupan proyek Heartz difokuskan pada penyelesaian Minimum Viable 
+Product (MVP) dalam durasi pengerjaan yang terukur, yakni 4-5 minggu. Untuk 
+memastikan model AI mencapai tingkat akurasi yang diwajibkan (di atas 85%), 
+batasan sistem secara spesifik diarahkan pada pemrosesan data audio murni 
+(audio-only) tanpa melibatkan pelacakan wajah (Face Tracking) berbasis kamera. 
+Model AI akan dilatih secara khusus untuk mengklasifikasikan 20 kelas 
+target pelafalan, yang mencakup 5 fonem vokal dasar (A, I, U, E, O) dan 15 suku 
+kata berbasis konsonan bilabial/bibir (Ba, Bi, Bu, Be, Bo, Pa, Pi, Pu, Pe, Po, Ma, 
+Mi, Mu, Me, Mo). Konsonan bilabial dipilih sebagai langkah awal karena bentuk 
+fisik artikulasinya paling mudah dipelajari oleh penyandang Tuli. 
+Hasil kerja akhir dari proyek ini berupa platform web interaktif yang 
+berfungsi 
+sebagai 
+Sistem 
+Visualisasi 
+Artikulasi. 
+Platform 
+ini 
+bertugas 
+memecahkan masalah terapi wicara dengan cara menerima input audio melalui 
+mikrofon peramban pengguna, mengekstraksi fitur gelombang suara menjadi 
+matriks visual (Mel-Spectrogram), dan menerjemahkan hasil klasifikasinya 
+menjadi feedback visual yang adaptif dan inklusif di layar pengguna secara 
+real-time. 
+ 
+
+ 
+Cakupan 
+tanggung 
+jawab 
+untuk 
+memecahkan 
+tugas 
+ini 
+dibagi 
+berdasarkan learning path: 
+●​ Tim 
+Data 
+Science: 
+Memiliki 
+cakupan kerja dalam pengumpulan 
+(gathering), augmentasi, dan pembersihan (cleaning) dataset rekaman 
+audio (.wav) pelafalan suku kata. Fokus utama mereka adalah memotong 
+durasi audio secara presisi dan menghilangkan noise suara latar agar data 
+siap diserap oleh sistem pemodelan AI. 
+●​ Tim AI Engineering: Memiliki cakupan kerja untuk membangun arsitektur 
+model Convolutional Neural Network (CNN) 2D dari awal. Tanggung jawab 
+mencakup pembuatan Custom Layer untuk ekstraksi Spectrogram, 
+pelatihan model, hingga pembungkusan model menjadi layanan REST API 
+mandiri (FastAPI) untuk keperluan inference. 
+●​ Tim Full-Stack Web Development: Memiliki cakupan kerja sebagai 
+integrator sistem. Tanggung jawab meliputi pembuatan Front-End dengan 
+Web Audio API untuk menangkap suara pengguna, perancangan UI/UX 
+untuk feedback visual interaktif, serta membangun logika Back-End 
+(Node.js) yang menjembatani klien dengan API AI. 
+Untuk memastikan proyek dapat di-delivery tepat waktu, cakupan 
+milestone ditetapkan dalam skala mingguan sebagai berikut: 
+●​ Minggu 1: Pengumpulan dan standarisasi dataset audio murni (20 kelas 
+suku kata), serta inisiasi repository kode. 
+●​ Minggu 2: Pembersihan dataset secara utuh (Data Wrangling) dan 
+perancangan arsitektur dasar model CNN 2D. 
+●​ Minggu 3: Pelatihan iteratif model AI untuk mencapai akurasi >85% dan 
+pembuatan layanan Back-End API. 
+●​ Minggu 4: Integrasi pipeline dari penangkap audio Front-End web ke 
+Inference AI, serta pengujian respons UI. 
+●​ Minggu 5: Deployment aplikasi ke server cloud (Streamlit & Vercel) dan 
+penyusunan dokumentasi laporan akhir. 
+ 
+C.​Jadwal Pengerjaan 
+Untuk memastikan penyelesaian Minimum Viable Product (MVP) Heartz 
+tepat waktu, proyek ini dijadwalkan dengan durasi pengerjaan selama 5 minggu. 
+ 
+
+ 
+Pendekatan manajemen proyek yang digunakan adalah Agile, di mana setiap 
+anggota diwajibkan melakukan pembaruan status harian (Daily Stand-up Meetup) 
+melalui grup komunikasi internal dan memanfaatkan Google Calendar sebagai 
+pengingat tenggat waktu (deadline) setiap milestone agar tidak terjadi kemacetan 
+kerja (bottleneck). 
+Berikut adalah tabel milestone dan jadwal pengerjaan proyek: 
+Waktu 
+Target Pencapaian (Milestone) 
+Penanggung Jawab Utama 
+Minggu 1 
+Persiapan & Pengumpulan Data 
+-​ Penyiapan repository GitHub 
+& infrastruktur environment. 
+-​ Gathering dataset audio 
+(.wav) untuk 20 kelas suku 
+kata (Vokal & Konsonan 
+Bilabial). 
+-​ Inisiasi boilerplate Front-End 
+web dan struktur API. 
+Tim Data Science & Tim Web 
+Minggu 2 
+Pemrosesan Data & Arsitektur 
+Model 
+-​ Data Cleaning (pemangkasan 
+durasi presisi, denoising, dan 
+penyeragaman sample rate). 
+-​ Pembuatan arsitektur CNN 2D 
+dasar dan integrasi Custom 
+Layer (Spectrogram). 
+-​ Perancangan UI/UX (Sistem 
+Visualisasi Artikulasi). 
+Tim Data Science & Tim AI 
+Minggu 3 
+Pelatihan Model & Integrasi 
+Backend 
+-​ Training & Evaluasi Model AI 
+(Target akurasi iteratif >85%). 
+-​ Ekspor Saved Model dan 
+pembungkusan ke dalam 
+REST API (FastAPI). 
+-​ Pengembangan logika 
+Back-End server (Node.js) dan 
+database. 
+Tim AI & Tim Web 
+Minggu 4 
+Integrasi Sistem & Pengujian 
+Seluruh Tim 
+ 
+
+ 
+Platform 
+-​ Pembuatan Analitik Data 
+Eksploratif (EDA) dan 
+Dashboard (Streamlit). 
+-​ Koneksi Web Audio API di 
+Front-End dengan API 
+Inference AI. 
+-​ Pengujian feedback visual UI 
+berdasarkan diagnosis 
+matriks frekuensi model. 
+Minggu 5 
+Penyelesaian & Deployment 
+-​ Deployment dashboard ke 
+Streamlit Cloud dan platform 
+web ke Server Cloud. 
+-​ Penulisan dokumentasi teknis 
+(Project Brief). 
+-​ Perekaman dan penyuntingan 
+video presentasi produk akhir. 
+Seluruh Tim 
+ 
+D.​Uraian Rencana Penugasan/Job Desk Setiap Learning Path  
+Pembagian tugas dalam tim Heartz dirancang secara spesifik berdasarkan 
+tiga learning path utama untuk memastikan Sistem Visualisasi Artikulasi dapat 
+beroperasi secara end-to-end. Berikut adalah uraian rencana penugasan 
+anggota tim: 
+1.​ Pengembangan Model Deep Learning (AI Engineering) 
+Penanggung Jawab: Ghildan Syarif Ayatullah & Rendy Elang Lesmana 
+Tugas Utama: Membangun arsitektur Convolutional Neural Network (CNN) 
+2D 
+dari 
+awal 
+(from 
+scratch) 
+menggunakan 
+TensorFlow 
+untuk 
+mengklasifikasikan 20 kelas suku kata. Tim ini diwajibkan membuat 
+komponen kustom tingkat lanjut, khususnya Custom Layer yang berfungsi 
+mengonversi input audio mentah menjadi gambar Mel-Spectrogram secara 
+langsung di dalam pipeline model. 
+Tugas 
+Tambahan: 
+Mengimplementasikan 
+training 
+loop 
+kustom, 
+mengintegrasikan TensorBoard untuk pemantauan metrik evaluasi, serta 
+ 
+
+ 
+membungkus model akhir (SavedModel) ke dalam layanan REST API mandiri 
+menggunakan FastAPI agar dapat diakses oleh tim Front-End. 
+2.​ Pengolahan Data dan Analitik (Data Science) 
+Penanggung Jawab: Rafi Geovazi & Dafin Surya 
+Tugas Utama: Mendefinisikan pertanyaan bisnis yang dapat diukur (metrik 
+evaluasi kelas suku kata), kemudian melakukan proses Data Wrangling 
+(Gathering, Assessing, Cleaning) terhadap dataset audio berformat .wav. 
+Fokus pembersihan data meliputi pemotongan presisi durasi audio per suku 
+kata, penyeragaman sample rate, serta denoising (penghilangan suara latar). 
+Format akhir data yang diserahkan adalah sekumpulan file .wav bersih yang 
+terstruktur dalam folder kelas (A, I, U, Ba, Pi, dst) tanpa diubah menjadi 
+matriks angka CSV. 
+Tugas Tambahan: Melakukan Exploratory Data Analysis (EDA) untuk 
+memvisualisasikan sebaran frekuensi data latih, dan membangun dashboard 
+analitik interaktif menggunakan Streamlit yang kemudian di-deploy ke 
+Streamlit Cloud. 
+3.​ Pengembangan Platform Web (Full-Stack Web Development) 
+Penanggung Jawab: Muhammad Isra Al Fattah & Carel Habsian Osagi 
+Tugas Utama: Bertindak sebagai integrator sistem utama. Di sisi klien 
+(Front-End), tim ini bertugas merancang antarmuka UI/UX yang responsif 
+menggunakan React.js/Vite dan mengimplementasikan Web Audio API untuk 
+menangkap suara pengguna melalui mikrofon peramban secara real-time. Di 
+sisi peladen (Back-End), tim menggunakan Node.js dengan framework 
+Express.js untuk mengelola alur data, routing RESTful, dan riwayat pengguna. 
+Tugas Tambahan: Merancang animasi visual interaktif (warna dan panduan 
+artikulasi) yang merespons diagnosis klasifikasi dari API AI, menghubungkan 
+sistem dengan basis data (NoSQL(MongoDB)), dan melakukan deployment 
+platform akhir ke server cloud (misal: Vercel/Render). 
+ 
+ 
+ 
+ 
+
+ 
+E.​Sumber Daya Proyek 
+Bahasa Pemrograman, Framework, dan Module Bundler untuk 
+Front-End 
+Untuk membangun Sistem Visualisasi Artikulasi yang responsif, kami 
+menggunakan JavaScript (ES6+) dengan React.js sebagai framework front-end. 
+React memungkinkan pengembangan komponen UI yang efisien, khususnya 
+integrasi Web Audio API untuk menangkap frekuensi suara via mikrofon 
+peramban secara real-time. Vite dipilih sebagai module bundler karena 
+kecepatan hot-reload yang esensial untuk prototyping cepat. Tailwind CSS 
+digunakan untuk membangun layout responsif dan merancang animasi 
+feedback visual (diagnosis artikulasi) yang ramah bagi penyandang disabilitas 
+rungu. Axios digunakan sebagai HTTP client untuk mengirim data audio ke 
+Back-End API secara efisien dengan dukungan interceptor dan penanganan 
+error 
+yang 
+konsisten. 
+Mockup 
+aplikasi 
+dirancang 
+di 
+Figma 
+sebelum 
+implementasi, dan aplikasi akhir di-deploy melalui Vercel karena integrasinya 
+yang mulus dengan ekosistem React. 
+Back-End, RESTful API, dan Database 
+Back-end dikembangkan menggunakan Node.js dengan framework 
+Express.js untuk membangun RESTful API yang menjembatani klien dengan 
+layanan AI. Express.js dipilih karena kemudahan dalam mendefinisikan routing 
+berbasis resource, penerapan middleware, serta penanganan error yang 
+terstruktur. 
+API 
+ini 
+bertugas 
+menerima 
+aliran 
+audio 
+dari 
+front-end, 
+menyimpannya sementara, lalu meneruskannya ke server inference AI. Untuk 
+manajemen data, kami menggunakan MongoDB (NoSQL) guna menyimpan 
+profil pengguna dan riwayat repetisi latihan suku kata. Semua endpoint 
+dirancang dengan struktur resource-based dan di-deploy sebagai serverless 
+functions di Vercel atau Render untuk menjamin skalabilitas layanan. 
+Pengembangan Model Deep Learning 
+Model utama proyek ini dibangun menggunakan TensorFlow Functional 
+API dengan arsitektur murni Convolutional Neural Network (CNN) 2D untuk 
+klasifikasi 20 kelas suku kata target. Kami tidak menggunakan model sekuensial 
+(seperti RNN/LSTM) demi menjaga performa komputasi pada durasi audio 
+pendek (1-2 detik). Model ini mengimplementasikan Custom Layer yang 
+ 
+
+ 
+berfungsi 
+mengonversi 
+gelombang 
+suara 
+mentah 
+menjadi 
+visualisasi 
+Mel-Spectrogram 
+secara 
+on-the-fly. 
+Pelatihan 
+dilakukan 
+secara kustom 
+menggunakan tf.GradientTape untuk kontrol penuh atas pembaruan gradien, 
+dibantu oleh integrasi TensorBoard untuk memantau metrik akurasi secara 
+real-time. Target performa model adalah akurasi minimal 85%, dan model akhir 
+diekspor dalam format SavedModel agar siap produksi. 
+Inference Model dan REST API Mandiri untuk AI 
+Model yang diekspor dibungkus dalam REST API mandiri menggunakan 
+FastAPI (Python). FastAPI dipilih karena dokumentasi otomatisnya (Swagger) dan 
+kemudahan integrasi beban komputasi Machine Learning. Proses inference ini 
+menerima input audio (.wav), mengekstraksi fiturnya, dan mengembalikan 
+respons JSON berisi prediksi kelas suku kata. API ini di-deploy secara terpisah di 
+layanan seperti Google Cloud Run. Sebagai pendukung sekunder, kami 
+mengintegrasikan Google Gemini API untuk menghasilkan pesan penutup atau 
+afirmasi teks yang adaptif guna memotivasi pengguna setelah sesi latihan 
+selesai. 
+Dataset, Pengumpulan Data, dan EDA 
+Dataset utama tidak menggunakan model pre-trained bahasa asing, 
+melainkan hasil Data Gathering mandiri secara spesifik untuk pelafalan dalam 
+bahasa Indonesia. Pengumpulan data dilakukan melalui ekstraksi audio dari 
+video edukasi di YouTube (berlisensi publik) untuk 20 kelas suku kata target 
+(vokal dasar dan konsonan bilabial). Pemrosesan end-to-end menggunakan 
+Python (Pandas, NumPy, Librosa) mencakup pemangkasan senyap, denoising, 
+dan penyeragaman sample rate menjadi 16 kHz. Exploratory Data Analysis (EDA) 
+divisualisasikan dengan Matplotlib dan Seaborn. Seluruh wawasan analitik, 
+seperti distribusi fitur akustik, diintegrasikan ke dalam dashboard interaktif 
+Streamlit dan di-deploy ke Streamlit Cloud. 
+Paper, Jurnal, dan Artikel sebagai Referensi 
+Desiani, A., Kesuma, L. I., Sartika, D. D., dkk. (2026). Aplikasi Bicara Pintar untuk 
+Meningkatkan Kemampuan Komunikasi Siswa Tunarungu di SLB-B YPAC 
+Palembang. Jurnal Kreativitas Pengabdian Kepada Masyarakat (PKM), 9(4), 270-287. 
+https://doi.org/10.33024/jkpm.v9i4.25071  
+Sumber Daya Lainnya (Tools dan Layanan Pendukung) 
+ 
+
+ 
+●​ Git & GitHub – kontrol versi dan kolaborasi tim. 
+●​ GitHub Actions – CI/CD untuk otomatisasi testing dan deployment. 
+●​ Google Collab – untuk eksplorasi data, prototyping model, dan pelatihan 
+model machine learning. 
+●​ Librosa – ekstraksi fitur audio (Mel-spectrogram, MFCC, chroma). 
+●​ SoundFile / PyAudio – untuk membaca dan menulis file audio. 
+●​ Docker – containerisasi layanan FastAPI dan backend Node.js. 
+●​ Postman – pengujian endpoint RESTful API. 
+●​ Media penyimpanan audio sementara (misalnya AWS S3, Google Cloud 
+Storage, ataupun cloud storage lainnya) untuk menyimpan rekaman audio 
+jika diperlukan analisis ulang. 
+ 
+F.​ Rencana Manajemen Risiko dan Isu 
+Untuk memastikan kelancaran pengerjaan Minimum Viable Product (MVP) 
+dalam 
+tenggat 
+waktu 
+5 
+minggu, 
+tim 
+mengimplementasikan 
+kerangka 
+manajemen risiko berbasis operasional dan teknis. Berikut adalah hasil 
+identifikasi faktor-faktor yang berpotensi menghambat proyek beserta langkah 
+mitigasinya : 
+1.​ Risiko Kualitas Data (Kebisingan/Noise) 
+●​ Isu: Pengumpulan dataset audio (khususnya melalui scraping) rentan 
+memiliki noise latar (suara angin, kendaraan, atau musik) yang bervariasi. 
+Hal ini dapat menurunkan akurasi model CNN 2D. 
+●​ Mitigasi: Tim Data Science menetapkan standar pembersihan data yang 
+ketat menggunakan teknik denoising (seperti spectral gating). Selain itu, 
+tim melakukan augmentasi data dengan noise injection dan pitch shifting 
+(Feature Engineering) saat training, agar model lebih tahan banting 
+(robust) terhadap variasi mikrofon pengguna di dunia nyata. 
+2.​ Risiko Kemacetan Kerja (Bottleneck Integrasi) 
+●​ Isu: Tim Full-Stack Web berpotensi tertunda pengerjaannya jika harus 
+menunggu model AI dan Back-End selesai dilatih dan di-deploy secara 
+utuh pada minggu ke-3. 
+●​ Mitigasi: Mengimplementasikan Mock API menggunakan data dummy 
+berupa respons JSON statis sejak minggu ke-1. Dengan cara ini, tim 
+ 
+
+ 
+Front-End dapat mulai merancang logika UI/UX dan animasi feedback 
+visual tanpa harus menunggu server inference AI benar-benar selesai. 
+3.​ Risiko Kinerja Sistem (Latensi Inference) 
+●​ Isu: Pengiriman file audio berekstensi .wav secara konstan dari klien ke 
+server berpotensi menyebabkan penundaan (lag) dalam memunculkan 
+feedback diagnosis artikulasi. 
+●​ Mitigasi: Menerapkan pembatasan durasi perekaman maksimal (1-2 detik 
+per suku kata) untuk meminimalkan ukuran payload. Selain itu, 
+antarmuka web akan dilengkapi dengan animasi loading state (seperti 
+visualisasi gelombang suara) agar pengguna menyadari bahwa sistem 
+sedang memproses data, sehingga User Experience (UX) tetap terjaga. 
+4.​ Risiko Overfitting pada Model Deep Learning 
+●​ Isu: Mengingat dataset pelafalan fonem Indonesia sangat spesifik, model 
+berisiko hanya menghafal data latih dan gagal memprediksi suara baru 
+(overfitting). 
+●​ Mitigasi: Tim AI Engineering akan menerapkan teknik Dropout pada 
+arsitektur CNN 2D serta menggunakan Custom Callback berupa Early 
+Stopping. Jika validation loss tidak membaik dalam beberapa epoch, 
+proses pelatihan akan otomatis dihentikan untuk menyimpan bobot 
+(weights) yang paling optimal. 
+5.​ Risiko Stabilitas Aplikasi (Crash pada Fitur Utama) 
+●​ Isu: 
+Integrasi 
+antara 
+Web 
+Audio 
+API 
+(Front-End), 
+REST 
+API 
+Node.js/Express.js (Back-End), dan Inference FastAPI (AI) melibatkan 
+banyak titik kegagalan. Kesalahan penanganan respons API, format audio 
+yang tidak sesuai, atau koneksi jaringan yang terputus berpotensi 
+menyebabkan crash atau UI tidak responsif pada fitur utama klasifikasi 
+suku kata. 
+●​ Mitigasi: Tim Full-Stack Web akan mengimplementasikan error handling 
+yang komprehensif di setiap lapisan: try-catch di sisi klien (React.js), 
+validasi format audio sebelum dikirim via Axios, serta respons error yang 
+informatif dari Express.js ke klien. Selain itu, pengujian end-to-end 
+terhadap alur perekaman audio hingga tampilnya feedback visual akan 
+dilakukan secara manual pada Minggu 4, mencakup validasi setiap 
+endpoint menggunakan Postman dan browser testing untuk skenario 
+ 
+
+ 
+koneksi terputus, guna memastikan fitur utama berjalan stabil tanpa 
+crash. 
+ 
+ 
+ 
