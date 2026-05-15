@@ -1,56 +1,71 @@
-# 🫀 Heartz — Panduan Kerja Data Scientist
+# 🫀 Heartz — Data Science Pipeline
 
-Satu-satunya file yang kamu buka dan jalankan adalah **`main.ipynb`**.
-Jalankan setiap step dari atas ke bawah secara berurutan.
+Pipeline otomatis persiapan dataset audio untuk CNN 2D klasifikasi **20 suku kata** .
 
----
-
-## STEP 0 — Setup
-
-**Jalankan semua cell di STEP 0.**
-Dilakukan sekali saja. Hasilnya: semua folder dataset terbuat otomatis dan library terinstall.
+Disini kita hanya berfokus ke **`main.ipynb`** karena file lainnya adalah modul.
 
 ---
 
-## STEP 1 — Masukkan Video
+## Pipeline Workflow
 
-1. Download video YouTube yang berisi pengucapan suku kata (contoh: "belajar Ba Bi Bu Be Bo")
-2. Taruh file video tersebut ke folder **`dataset/manual_downloads/`**
-3. **Jalankan semua cell di STEP 1.**
-   Hasilnya: video diubah menjadi file audio `.wav` di folder `dataset/downloads/`
+```
+manual_downloads/ → downloads/ → raw/ → clean/ → augmented/
+   (video/mp3)     (WAV mono)  (split) (cleaned) (training)
+```
 
----
+### 20 Kelas Target:
 
-## STEP 2 — Potong Audio per Suku Kata
-
-**Jalankan semua cell di STEP 2.**
-
-Ini bagian yang paling banyak melibatkan kamu secara manual. Yang terjadi:
-
-- Kamu mendengarkan setiap potongan audio satu per satu
-- Kamu mengetik label suku katanya (contoh: `Ba`, `A`, `Ma`)
-- Potongan yang bukan suku kata target (intro, instruksi, dll) cukup tekan Enter untuk dilewati
-
-Ulangi proses ini untuk setiap video yang kamu punya.
-
-Setelah selesai, jalankan cell **"Cek Status Dataset"** di bagian bawah STEP 2 untuk melihat jumlah data per suku kata:
-
-- ✅ = sudah cukup (≥150 file)
-- ⚠️ = hampir cukup (100–149 file)
-- ❌ = masih kurang, download video lagi untuk suku kata ini lalu ulangi STEP 1–2
-
-**Jangan lanjut ke STEP 3 sebelum semua 20 suku kata minimal ⚠️**
+| Vokal         | Ba-set             | Pa-set             | Ma-set             |
+| ------------- | ------------------ | ------------------ | ------------------ |
+| A, I, U, E, O | Ba, Bi, Bu, Be, Bo | Pa, Pi, Pu, Pe, Po | Ma, Mi, Mu, Me, Mo |
 
 ---
 
-## STEP 3 — Bersihkan Audio
+## ⚙️ STEP 0 — Setup Environment
 
-**Jalankan semua cell di STEP 3.**
-Berjalan otomatis, tidak ada yang perlu kamu lakukan. Hasilnya: audio bersih tersimpan di folder `dataset/clean/`
+- Install dependencies dari `requirements.txt`
+- Inisialisasi folder dataset dan import semua modul
+- Buat struktur folder yang dibutuhkan
 
-### 🔧 Penjelasan Proses Cleaning
+---
 
-Setiap audio file di folder `dataset/raw/` diproses melalui 6 tahap:
+## 📥 STEP 1 — Preparation
+
+**Input:** File media manual (video/audio) yang sudah diunduh
+**Output:** Audio WAV standar (16kHz, mono)
+
+Letakkan file di folder **`dataset/manual_downloads/`** Lalu jalankan cell untuk konversi ke format `.wav`, ini otomatis tersimpan ke **`dataset/downloads/`**
+
+---
+
+## ✂️ STEP 2 — Splitting (Potong Audio per Suku Kata)
+
+**Input:** Audio file dari `dataset/downloads/`
+**Output:** Potongan audio per suku kata di `dataset/raw/`
+
+Sistem split menggunakan **automatic labeling** berdasarkan nama file:
+
+- Beri nama file sesuai suku kata yang ada di dalamnya (contoh: `Ba.wav`, `Me2.wav`, `O3.wav`)
+- Fungsi akan otomatis mendeteksi jumlah region dan memberi label sesuai nama file
+- Setiap region dipotong dan disimpan di folder classnya sendiri
+
+**Proses:**
+
+1. Preview semua region yang terdeteksi di setiap file
+2. Auto-generate mapping label untuk semua region
+3. Jalankan split untuk semua file sekaligus
+4. Validasi hasil split terhadap file di downloads
+
+---
+
+## 🧹 STEP 3 — Cleaning
+
+**Input:** Audio kasar dari `dataset/raw/`
+**Output:** Audio bersih di `dataset/clean/`
+
+### Tahapan Proses Cleaning
+
+Setiap audio file diproses melalui 5 tahap otomatis:
 
 #### 1. **Noise Reduction** (Kurangi Kebisingan)
 
@@ -95,32 +110,14 @@ Setiap audio file di folder `dataset/raw/` diproses melalui 6 tahap:
 
 ### 📊 Visualisasi Perubahan
 
-Di bagian bawah STEP 3, ada cell untuk membandingkan audio SEBELUM dan SESUDAH cleaning:
-
 - **Waveform** (gelombang) — terlihat lebih rapi dan smooth
 - **Spectrogram** (frekuensi)— frekuensi aneh sudah hilang
-
-Jalankan cell tersebut untuk melihat perbedaannya!
 
 ---
 
 ## STEP 4 — Perbanyak Data (Data Augmentation)
 
-**Jalankan semua cell di STEP 4.**
-Berjalan otomatis, tidak ada yang perlu kamu lakukan.
-
-### 🎯 Apa Itu Augmentasi?
-
-Augmentasi adalah teknik untuk **menggandakan jumlah data training** dengan membuat variasi dari setiap file asli, tanpa menambah effort recording. Contohnya:
-
-- File asli: "A.wav"
-- Hasil augmentasi: "A_aug1.wav", "A_aug2.wav", "A_aug3.wav", "A_aug4.wav"
-
-Setiap augmentasi berbeda, jadi model AI akan belajar dari lebih banyak contoh.
-
-### 📊 Teknik Augmentasi yang Digunakan
-
-Setiap file original diaugmentasi menjadi **4 variasi**, masing-masing menggunakan teknik berbeda:
+- Karena ada beberapa data yang masih tidak cukup (Bi), maka dengan menggandakan setiap file original menjadi **4 variasi**, masing-masing menggunakan teknik berbeda:
 
 | Teknik                    | Penjelasan                                     | Manfaat                                             |
 | ------------------------- | ---------------------------------------------- | --------------------------------------------------- |
@@ -129,22 +126,11 @@ Setiap file original diaugmentasi menjadi **4 variasi**, masing-masing menggunak
 | **Time Stretch + Volume** | Ubah kecepatan bicara + volume                 | Simulasi orang yang bicara cepat/lambat             |
 | **Kombinasi Ringan**      | Mix pitch + pink noise + volume                | Realistic augmentation, mirip kondisi real          |
 
-### 📈 Hasil
-
-Jika awalnya ada **500 file**, setelah augmentasi menjadi:
-
-- File asli: 500
-- Augmented: 500 × 4 = 2000
-- **Total: 2500 file** untuk training
-
-Hasil tersimpan di folder **`dataset/augmented/`**
+Hasilnya pun data telah tercukupi dan tersimpan di folder **`dataset/augmented/`**
 
 ---
 
 ## STEP 5 — Analisis Data (EDA - Exploratory Data Analysis)
-
-**Jalankan semua cell di STEP 5.**
-Berjalan otomatis. Menampilkan visualisasi dan analisis dataset untuk memastikan kualitas data.
 
 ### 📊 Output EDA yang Ditampilkan
 
@@ -156,14 +142,11 @@ Berjalan otomatis. Menampilkan visualisasi dan analisis dataset untuk memastikan
    - Garis Hijau (--) = Target ideal (200 file)
 ```
 
-**Yang harus Anda lihat:**
+**Yang harus diperhatikan:**
 
 - ✅ Semua kelas di atas garis orange = DATA CUKUP
 - ⚠️ Ada kelas di bawah garis hijau = Kurang optimal, tapi masih OK
-- ❌ Ada kelas jauh di bawah orange = TIDAK CUKUP, harus tambah data!
-
-**Apa yang harus dilakukan:**
-
+- ❌ Ada kelas jauh di bawah orange = TIDAK CUKUP, harus tambah data
 - Jika semua ✅ → **Lanjut ke STEP 6**
 - Jika ada ⚠️ atau ❌ → **Kembali ke STEP 2** dan record ulang untuk suku kata yang kurang
 
@@ -175,7 +158,7 @@ Berjalan otomatis. Menampilkan visualisasi dan analisis dataset untuk memastikan
    - Y-axis = Amplitudo (tinggi rendah suara)
 ```
 
-**Yang harus Anda lihat:**
+**Yang harus diperhatikan:**
 
 - ✅ Gelombang rapi, tidak ada spike aneh = BAGUS (sudah dibersihkan)
 - ⚠️ Ada spike/noise = Kurang bagus, pertimbangkan re-record atau re-clean
@@ -188,7 +171,7 @@ Berjalan otomatis. Menampilkan visualisasi dan analisis dataset untuk memastikan
    - Warna gelap = Frekuensi lemah (silence/noise)
 ```
 
-**Yang harus Anda lihat:**
+**Yang harus diperhatikan:**
 
 - ✅ Pola jelas, terlihat peak suara bicara = BAGUS
 - ❌ Banyak noise random = Belum optimal
@@ -200,7 +183,7 @@ Berjalan otomatis. Menampilkan visualisasi dan analisis dataset untuk memastikan
    - Semua file harus seragam (sekitar 1.5 detik)
 ```
 
-**Yang harus Anda lihat:**
+**Yang harus diperhatikan:**
 
 - ✅ Semua file sama panjang, 1 garis tegak = SEMPURNA
 - ⚠️ Ada variasi durasi = Berarti ada file yang belum di-pad/trim
@@ -211,7 +194,7 @@ Berjalan otomatis. Menampilkan visualisasi dan analisis dataset untuk memastikan
 🎤 Menampilkan 2-3 contoh file per kelas
 ```
 
-**Yang harus Anda lihat:**
+**Yang harus diperhatikan:**
 
 - ✅ Semua file jelas terdengar bicara = BAGUS
 - ❌ Ada file yang aneh/tidak terdengar jelas = Ada masalah
@@ -223,7 +206,7 @@ Di bagian bawah STEP 5, ada cell yang membandingkan:
 - **Kolom kiri** = Dataset CLEAN (asli, tidak di-augmentasi)
 - **Kolom kanan** = Dataset AUGMENTED (sudah 4x lipat)
 
-**Yang harus Anda perhatikan:**
+**Yang harus diperhatikan:**
 
 - Kolom kanan harus lebih tinggi semua bar-nya (minimal 4x dari kiri)
 - Jika tidak, berarti augmentasi belum jalan sempurna
@@ -244,9 +227,6 @@ Jika ada yang ❌ → **Kembali ke STEP 2/3** dan perbaiki data sebelum lanjut.
 
 ## STEP 6 — Export & Serah Terima ke Tim AI
 
-**Jalankan semua cell di STEP 6.**
-Berjalan otomatis. Hasilnya: dua file penting terbuat:
-
 ### 📦 Output yang Dihasilkan
 
 #### 1. **`dataset/augmented/` — Dataset untuk Training**
@@ -260,7 +240,7 @@ dataset/augmented/
 ├── ... (28 folder total, termasuk Be2, Be3, dll.)
 ```
 
-**Ini adalah file yang akan dipakai Tim AI** untuk training model deep learning.
+**Ini adalah file yang akan dipakai Tim AI** untuk training model.
 
 #### 2. **`dataset/metadata/` — File Ringkasan**
 
@@ -270,13 +250,86 @@ dataset/metadata/
 └── metadata_augmented.csv    (Info file hasil augmentasi)
 ```
 
-Setiap CSV berisi:
+#### **Kolom-Kolom di File CSV**
 
-- Nama file
-- Label (A, Ba, Bi, etc.)
-- Durasi
-- Sample rate
-- Path lengkap
+File `metadata_augmented.csv` berisi kolom-kolom berikut:
+
+| Kolom               | Isi                     | Contoh                                     | Guna                         |
+| ------------------- | ----------------------- | ------------------------------------------ | ---------------------------- |
+| `file_name`         | Nama file audio         | `A_001.wav`                                | Identifikasi file unik       |
+| `label`             | Label suku kata         | `A`, `Ba`, `Bi`                            | Ground truth untuk training  |
+| `duration`          | Panjang file (detik)    | `1.5`                                      | Validasi standarisasi durasi |
+| `sample_rate`       | Kecepatan sampling (Hz) | `16000`                                    | Validasi kualitas audio      |
+| `rms_energy`        | Energi power audio      | `0.045`                                    | Validasi normalisasi volume  |
+| `peak_amplitude`    | Amplitudo puncak        | `0.98`                                     | Deteksi clipping             |
+| `augmentation_type` | Tipe augmentasi         | `original`, `aug1`, `aug2`, `aug3`, `aug4` | Tracking asal file           |
+
+### 🎯 Guna Metadata untuk Tim AI
+
+#### **1. Training Model**
+
+```python
+# Tim AI bisa langsung baca CSV untuk training
+import pandas as pd
+
+metadata = pd.read_csv('metadata_augmented.csv')
+
+# Validasi data
+print(f"Total file: {len(metadata)}")
+print(f"Kelas unik: {metadata['label'].unique()}")
+print(f"Durasi min: {metadata['duration'].min()}s")
+print(f"Durasi max: {metadata['duration'].max()}s")
+```
+
+#### **2. Split Train/Val/Test**
+
+```python
+# Tim AI gunakan metadata untuk split data secara random tapi balanced
+from sklearn.model_selection import train_test_split
+
+train, test = train_test_split(
+    metadata,
+    test_size=0.2,
+    stratify=metadata['label']  # Pastikan setiap kelas terwakili
+)
+
+# Train: 80% | Test: 20%
+```
+
+#### **3. Quality Control/Validasi**
+
+```python
+# Cek apakah ada anomali
+print(metadata[metadata['duration'] != 1.0])  # File yang durasi gak 1.0s
+print(metadata[metadata['rms_energy'] > 0.1])  # File yang terlalu keras
+print(metadata[metadata['peak_amplitude'] > 0.99])  # File yang clipping
+```
+
+#### **4. Reproducibility & Dokumentasi**
+
+```
+Saat model sudah trained, Tim AI bisa:
+- Dokumentasi: "Model dilatih dengan 2500 file dari metadata_augmented.csv"
+- Verifikasi: "Setiap file training bisa ditelusuri via file_path"
+- Audit: "Lihat augmentation_type untuk tahu file mana yang original"
+```
+
+#### **5. Re-training atau Fine-tuning**
+
+Kalau di masa depan ada data baru, metadata lama bisa dibandingkan dengan yang baru untuk memastikan konsistensi.
+
+### 📊 Perbedaan metadata_clean.csv vs metadata_augmented.csv
+
+| Aspek                 | Clean              | Augmented                       |
+| --------------------- | ------------------ | ------------------------------- |
+| **Jumlah file**       | ~300-600 per kelas | ~1200-2400 per kelas (4x lipat) |
+| **Guna**              | Validasi data asli | **Ini yang untuk training**     |
+| **Augmentation Type** | Semua `original`   | Mix `original` + `aug1/2/3/4`   |
+| **Digunakan Tim AI**  | Hanya referensi    | **UTAMA untuk training model**  |
+
+**➡️ Tim AI akan fokus menggunakan `metadata_augmented.csv` karena memiliki lebih banyak data.**
+
+---
 
 ### 📤 Serah Terima ke Tim AI Engineering
 
@@ -287,21 +340,8 @@ Setelah STEP 6 selesai, **siapkan 2 hal untuk diserahkan**:
    - Untuk digunakan training model AI
 
 2. **Folder `dataset/metadata/`**
-   - Berisi `metadata_augmented.csv`
-   - Untuk dokumentasi dataset
-
-### 📋 Checklist Serah Terima
-
-- [ ] `dataset/augmented/` sudah di-backup/di-copy ke storage
-- [ ] `dataset/metadata/metadata_augmented.csv` sudah ada
-- [ ] File `.csv` sudah dibuka dan isinya ter-lihat (untuk validasi)
-- [ ] Sudah koordinasi dengan Tim AI untuk penerimaan data
-- [ ] Dokumentasi proses (berapa file asli, berapa setelah augmentasi) sudah dicatat
+   - Berisi `metadata_augmented.csv` (yang utama)
+   - Dan `metadata_clean.csv` (untuk referensi)
+   - Untuk dokumentasi dan validasi dataset
 
 ---
-
-## Checklist Akhir
-
-- [ ] Semua 20 suku kata tidak ada yang ❌
-- [ ] STEP 6 sudah dijalankan dan file metadata sudah ada
-- [ ] Folder `augmented/` sudah dikirim ke Tim AI
