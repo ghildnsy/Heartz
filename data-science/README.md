@@ -345,3 +345,62 @@ Setelah STEP 6 selesai, **siapkan 2 hal untuk diserahkan**:
    - Untuk dokumentasi dan validasi dataset
 
 ---
+
+### 🗒️ Catatan: Ketika semua cell pada main.ipynb dijalankan ulang
+
+#### ⚠️ Perilaku Pipeline Saat Re-run
+
+| Tahap                                           | Perilaku                                             | Hasil                  |
+| ----------------------------------------------- | ---------------------------------------------------- | ---------------------- |
+| **STEP 1: Preparation** (convert_manual_to_wav) | ✅ **SKIP** jika file sudah ada di `downloads/`      | Tidak ada perubahan    |
+| **STEP 2: Splitting** (split_audio_selective)   | ⚠️ **MENAMBAH** file baru (generate nama nomor urut) | File akan **DUPLIKAT** |
+| **STEP 3: Cleaning** (clean_all)                | ✅ **SKIP** jika file sudah ada di `clean/`          | Tidak ada perubahan    |
+| **STEP 4: Augmentasi** (augment_all)            | ✅ **SKIP** jika file sudah ada di `augmented/`      | Tidak ada perubahan    |
+
+#### 💡 Penjelasan Detail:
+
+**✅ STEP 1 (Preparation):**
+
+- Fungsi `convert_manual_to_wav()` mengecek apakah file sudah ada di `dataset/downloads/`
+- Jika sudah ada → **SKIP**, tidak di-convert ulang
+- Jika belum ada → Convert baru
+
+**⚠️ STEP 2 (Splitting) — PERLU HATI-HATI:**
+
+- Fungsi `split_audio_selective()` menggunakan `generate_next_filename()` untuk generate nama file otomatis
+- Cara kerja: Cari file tertinggi di folder (misal: `Ba_0005.wav`), lalu buat file baru nomor +1 (misal: `Ba_0006.wav`)
+- **Akibat:** Setiap kali re-run splitting, akan membuat file BARU dengan nomor urut yang lebih tinggi
+- **Hasil:** File akan DUPLIKAT dan total file berlipat ganda
+
+**✅ STEP 3 (Cleaning):**
+
+- Fungsi `clean_all()` cek apakah file sudah ada di `dataset/clean/{label}/`
+- Jika sudah ada → **SKIP**, tidak di-clean ulang
+- Jika belum ada → Clean baru
+
+**✅ STEP 4 (Augmentasi):**
+
+- Fungsi `augment_all()` cek apakah file sudah ada di `dataset/augmented/{label}/`
+- Jika sudah ada → **SKIP**, tidak di-augmentasi ulang
+- Jika belum ada → Augmentasi baru
+
+#### 🎯 Rekomendasi:
+
+1. **Jalankan pipeline hanya SEKALI end-to-end** (dari STEP 1 sampai STEP 6)
+2. **Jika perlu re-run pipeline:**
+   - **Hindari re-run STEP 2 (Splitting)** kecuali Anda sudah backup atau hapus folder `dataset/raw/`
+   - STEP 3, 4, 5, 6 aman di-re-run (otomatis skip file yang sudah ada)
+3. **Jika terpaksa re-run splitting:**
+   ```bash
+   # Backup atau hapus folder raw lama terlebih dahulu
+   rm -r dataset/raw/
+   # Kemudian jalankan splitting cell ulang
+   ```
+
+#### ❌ Kesalahan:
+
+| Kesalahan                                  | Akibat                                                           | Solusi                                        |
+| ------------------------------------------ | ---------------------------------------------------------------- | --------------------------------------------- |
+| Re-run splitting berkali-kali tanpa backup | File di `dataset/raw/` berlipat ganda, total menjadi ribuan file | Hapus `dataset/raw/` sebelum re-run splitting |
+| Re-run cleaning berkali-kali               | Tidak ada masalah, file di-skip otomatis                         | Aman, tidak perlu backup                      |
+| Re-run augmentasi berkali-kali             | Tidak ada masalah, file di-skip otomatis                         | Aman, tidak perlu backup                      |
