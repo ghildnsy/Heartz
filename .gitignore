@@ -1,7 +1,6 @@
 .env
 
 # --- Python / virtualenv ---
-.vscode/
 .venv/
 venv/
 env/
