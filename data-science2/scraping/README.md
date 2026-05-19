@@ -127,9 +127,6 @@ pip install --upgrade pip
 
 # Install dependencies
 pip install -r requirements.txt
-
-# ATAU install manually:
-pip install noisereduce scipy soundfile yt-dlp pydub librosa pandas numpy whisperx jupyter
 ```
 
 ### Step 5: Verifikasi Instalasi

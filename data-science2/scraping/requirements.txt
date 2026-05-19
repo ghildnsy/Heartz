@@ -19,6 +19,7 @@ yt-dlp>=2024.0.0
 # Data Processing
 pandas>=2.0.0
 numpy>=1.24.0
+ipykernel>=6.0.0
 
 # Optional: For GPU acceleration
 # torch-cuda  # Install appropriate CUDA version for your system
