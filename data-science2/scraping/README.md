@@ -985,5 +985,4 @@ plt.show()
 
 ---
 
-**Last Updated**: May 18, 2026
-**Version**: 2.1.0 (with 2-Stage Consolidation Augmentation Pipeline)
+**Last Updated**: May 19, 2026
