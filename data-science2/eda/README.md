@@ -68,7 +68,7 @@ data-science2/
 ### Step 1: Buka Terminal di Folder `eda`
 
 ```powershell
-# Windows PowerShell (Sesuaikan direktori path  perangkat masing-masing)
+# Windows PowerShell (Sesuaikan direktori path perangkat masing-masing)
 cd "c:\Users\ASUS\Documents\CC x DBS 2026 (DS)\Capstone Project\Heartz\data-science2\eda"
 ```
 
@@ -419,6 +419,4 @@ Jika masih mengalami masalah:
 
 ---
 
-**Created**: May 19, 2026  
-**Last Updated**: May 19, 2026  
-**Notebook Version**: main.ipynb v1.0
+**Last Updated**: May 19, 2026 
