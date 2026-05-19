@@ -106,7 +106,7 @@ ffmpeg -version
 
 ```bash
 # Navigate ke project directory
-cd "path/to/Heartz/data-science2"
+cd "/Heartz/data-science2/scraping"
 
 # Create virtual environment
 python -m venv venv
