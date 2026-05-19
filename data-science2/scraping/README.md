@@ -291,7 +291,7 @@ YouTube URLs
 **Terminal Commands** (Run sekali di awal):
 
 ```bash
-# 1. Navigate ke Heartz project root
+# 1. Navigate ke Heartz project root (Sesuaikan direktori path perangkat masing-masing)
 cd "C:\Users\ASUS\Documents\Coding Camp Powered by DBS Foundation (Data Scientist)\Capstone Project\Heartz"
 
 # 2. Activate virtual environment
