@@ -68,7 +68,7 @@ data-science2/
 ### Step 1: Buka Terminal di Folder `eda`
 
 ```powershell
-# Windows PowerShell
+# Windows PowerShell (Sesuaikan direktori path  perangkat masing-masing)
 cd "c:\Users\ASUS\Documents\CC x DBS 2026 (DS)\Capstone Project\Heartz\data-science2\eda"
 ```
 
