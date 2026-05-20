@@ -10,7 +10,8 @@ pydub>=0.25.1
 ffmpeg-python>=0.2.0
 
 # Speech-to-Text
-whisperx>=1.0.0
+whisperx>=0.10.1
+ctranslate2>=4.6.1
 torch>=2.0.0
 
 # YouTube Download

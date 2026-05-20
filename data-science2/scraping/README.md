@@ -23,11 +23,13 @@ Pipeline lengkap untuk scraping audio dari YouTube, pemrosesan audio, transkrips
 
 | Requirement | Version | Tujuan | Platform |
 |---|---|---|---|
-| **Python** | 3.8+ | Runtime environment | Windows/Mac/Linux |
+| **Python** | 3.8 - 3.13.13 ⚠️ | Runtime environment | Windows/Mac/Linux |
 | **FFmpeg** | 4.0+ | Audio encoding/decoding | Windows/Mac/Linux |
 | **Node.js** | 14+ | Untuk beberapa tools | Windows/Mac/Linux |
 | **Pip** | Latest | Python package manager | Included with Python |
 | **Jupyter** | Latest | Notebook environment | Via pip |
+
+> ⚠️ **PENTING**: Project ini **HANYA kompatibel dengan Python 3.13.13 ke bawah**. Jangan gunakan Python 3.13 atau lebih tinggi karena akan menyebabkan error pada library dependencies (terutama WhisperX dan librosa). Pastikan install Python versi 3.8 - 3.13.13.
 
 ### Hardware Minimum:
 - **RAM**: 8 GB minimum (16+ GB recommended)
@@ -44,7 +46,8 @@ Pipeline lengkap untuk scraping audio dari YouTube, pemrosesan audio, transkrips
 **Windows:**
 ```bash
 # Download dari https://www.python.org/downloads/
-# Pilih Python 3.10 atau lebih baru
+# Pilih Python 3.8, 3.9, 3.10, 3.11, atau 3.13.13
+# ⚠️ JANGAN PILIH Python 3.13.13+ (TIDAK KOMPATIBEL)
 # PENTING: Checklist "Add Python to PATH" saat install
 
 # Verifikasi instalasi:
