@@ -9,9 +9,10 @@ Panduan lengkap untuk menjalankan analisis Exploratory Data Analysis (EDA) pada 
 2. [Struktur Folder](#struktur-folder)
 3. [Instalasi & Setup](#instalasi--setup)
 4. [Menjalankan Notebook](#menjalankan-notebook)
-5. [Deskripsi Notebook](#deskripsi-notebook)
-6. [Troubleshooting](#troubleshooting)
-7. [Output & Hasil](#output--hasil)
+5. [Menjalankan Dashboard Streamlit](#menjalankan-dashboard-streamlit)
+6. [Deskripsi Notebook](#deskripsi-notebook)
+7. [Troubleshooting](#troubleshooting)
+8. [Output & Hasil](#output--hasil)
 
 ---
 
@@ -37,7 +38,7 @@ File ini harus berada dalam struktur folder berikut:
 data-science2/
 ├── eda/
 │   ├── main.ipynb                          ← NOTEBOOK UTAMA
-│   ├── EDA_Analysis.ipynb                  ← ALTERNATIF
+│   ├── app.py                              ← DASHBOARD STREAMLIT
 │   ├── README.md                           ← FILE INI
 │   ├── requirements.txt                    ← DEPENDENCIES
 │   ├── venv/                               ← VIRTUAL ENVIRONMENT
@@ -45,7 +46,7 @@ data-science2/
 │   │   ├── Lib/
 │   │   └── ...
 │   └── dataset/
-│       ├── extracted_syllables_consolidated/
+│       ├── augmented_1/
 │       │   ├── a/
 │       │   ├── ba/
 │       │   ├── be/
@@ -59,7 +60,7 @@ data-science2/
 │           └── ...
 ```
 
-**⚠️ PENTING**: Folder `dataset/extracted_syllables_consolidated/` harus sudah ada dengan file `.wav` di dalamnya sebelum menjalankan notebook!
+**⚠️ PENTING**: Folder `dataset/augmented_1/` harus sudah ada dengan file `.wav` di dalamnya sebelum menjalankan notebook!
 
 ---
 
@@ -169,12 +170,87 @@ jupyter nbconvert --to notebook --execute main.ipynb --output main_executed.ipyn
 
 ---
 
+## 📊 Menjalankan Dashboard Streamlit
+
+Setelah menjalankan notebook dan `dataset/syllable_features.csv` berhasil dibuat, Anda dapat menjalankan **Interactive Dashboard Streamlit** untuk eksplorasi data yang lebih menarik.
+
+### 🚀 Langkah-Langkah Menjalankan Dashboard
+
+#### **Step 1: Pastikan Dependencies Terinstall**
+
+```powershell
+# Aktifkan virtual environment terlebih dahulu
+.\venv\Scripts\Activate.ps1
+
+# Install/Update Streamlit
+pip install streamlit
+```
+
+#### **Step 2: Jalankan Dashboard**
+
+```powershell
+# Dari folder eda
+streamlit run app.py
+```
+
+**Output yang akan terlihat:**
+```
+  You can now view your Streamlit app in your browser.
+
+  Local URL: http://localhost:8501
+  Network URL: http://192.168.x.x:8501
+```
+
+#### **Step 3: Akses Dashboard**
+
+- Buka browser Anda
+- Navigasi ke: `http://localhost:8501`
+- Dashboard akan terbuka otomatis (atau copy-paste URL)
+
+### 📑 Fitur-Fitur Dashboard
+
+Dashboard Streamlit mencakup **9 halaman interaktif**:
+
+| No. | Halaman | Deskripsi |
+|-----|---------|-----------|
+| 1 | 🏠 Dashboard Utama | Overview dataset, key metrics, dan distribusi suku kata |
+| 2 | 📈 Analisis Fitur Utama | Distribusi fitur akustik utama dengan visualisasi interaktif |
+| 3 | 🎼 MFCC Analysis | Analisis mendalam Mel-Frequency Cepstral Coefficients |
+| 4 | 🔗 Korelasi Fitur | Heatmap korelasi antar fitur dengan pilihan metode |
+| 5 | 📉 Stabilitas Fitur | Feature stability ranking dan analisis robustness |
+| 6 | 🔤 Konsonan vs Vokal | Perbandingan karakteristik akustik konsonan & vokal |
+| 7 | 🗣️ Analisis Tipe Konsonan | Detail analisis untuk berbagai tipe konsonan (M, B, P) |
+| 8 | ⏱️ Analisis Durasi | Statistik dan distribusi durasi audio per suku kata |
+| 9 | 📊 Data Insights | Ringkasan komprehensif dengan recommendations untuk modeling |
+
+### 🎨 Fitur Interaktif
+
+✅ **Sidebar Navigation** - Pilih halaman dengan mudah  
+✅ **Dynamic Filters** - Pilih fitur, metode analisis, dll  
+✅ **Real-time Charts** - Visualisasi yang responsif  
+✅ **Detailed Statistics** - Tabel lengkap dengan statistik  
+✅ **Export-ready Visuals** - Gambar berkualitas tinggi  
+✅ **Data Quality Report** - Laporan kualitas data otomatis  
+
+### 💡 Tips Penggunaan
+
+1. **Eksplorasi Interaktif**: Gunakan sidebar untuk navigasi antar halaman
+2. **Deep Dive**: Pilih fitur spesifik untuk analisis mendalam
+3. **Perbandingan**: Gunakan multi-select untuk membandingkan beberapa fitur
+4. **Screenshots**: Tekan `Ctrl+A` → `Ctrl+C` untuk screenshot halaman
+
+### 🛑 Menghentikan Dashboard
+
+Di terminal, tekan `Ctrl+C` untuk menghentikan server Streamlit.
+
+---
+
 ## 📖 Deskripsi Notebook
 
 Notebook `main.ipynb` terdiri dari beberapa tahap utama:
 
 ### **Tahap 1: Feature Extraction** (Cell 1-5)
-- Membaca semua file `.wav` dari folder `dataset/extracted_syllables_consolidated/`
+- Membaca semua file `.wav` dari folder `dataset/augmented_1/`
 - Mengekstrak 34 fitur audio dari setiap file:
   - **Waktu**: Duration
   - **Energi**: RMS, Zero Crossing Rate
@@ -233,7 +309,7 @@ pip install librosa
 
 ### ❌ Error: "Dataset directory tidak ditemukan"
 
-**Penyebab:** Folder `dataset/extracted_syllables_consolidated/` tidak ada atau jalur salah
+**Penyebab:** Folder `dataset/augmented_1/` tidak ada atau jalur salah
 
 **Solusi:**
 1. Verifikasi struktur folder (lihat [Struktur Folder](#struktur-folder))
@@ -244,8 +320,8 @@ pip install librosa
 ```python
 import os
 print(f"Current directory: {os.getcwd()}")
-print(f"Dataset path: {os.path.join(os.getcwd(), 'dataset', 'extracted_syllables_consolidated')}")
-print(f"Path exists: {os.path.exists(os.path.join(os.getcwd(), 'dataset', 'extracted_syllables_consolidated'))}")
+print(f"Dataset path: {os.path.join(os.getcwd(), 'dataset', 'augmented_1')}")
+print(f"Path exists: {os.path.exists(os.path.join(os.getcwd(), 'dataset', 'augmented_1'))}")
 ```
 
 ### ❌ Error: "No such file or directory: 'dataset/syllable_features.csv'"
@@ -255,7 +331,7 @@ print(f"Path exists: {os.path.exists(os.path.join(os.getcwd(), 'dataset', 'extra
 **Solusi:**
 1. Pastikan cell feature extraction (cell 1-5) dijalankan tanpa error
 2. Cek output di cell tersebut untuk melihat apakah ada error saat ekstraksi
-3. Verifikasi file `.wav` ada di folder `dataset/extracted_syllables_consolidated/`
+3. Verifikasi file `.wav` ada di folder `dataset/augmented_1/`
 
 ### ❌ Error: "FFmpeg not found" atau Audio Processing Error
 
@@ -343,7 +419,7 @@ Pastikan semua ini sudah selesai:
 - [ ] Python 3.8+ terinstall
 - [ ] Virtual environment dibuat dan diaktifkan
 - [ ] Semua dependencies terinstall (`pip install -r requirements.txt`)
-- [ ] Folder `dataset/extracted_syllables_consolidated/` ada dengan file `.wav` di dalamnya
+- [ ] Folder `dataset/augmented_1/` ada dengan file `.wav` di dalamnya
 - [ ] Berada di folder `eda` saat menjalankan notebook
 - [ ] FFmpeg terinstall (optional tapi recommended)
 - [ ] RAM tersedia minimal 8 GB
