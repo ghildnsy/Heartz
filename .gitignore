@@ -14,10 +14,6 @@ __pycache__/
 # --- VS Code ---
 .vscode/
 
-# --- Dataset ---
-machine-learning/data/
-machine-learning/outputs/
-
 # --- Training logs / models ---
 **/*.tfevents.*
 **/*.h5
