@@ -6,8 +6,7 @@
 - [x] **Sistem Error Handling Terpusat:** Membuat middleware khusus di Express.js untuk menangkap semua error agar peladen tidak crash dan merespons dengan HTTP status yang tepat.
 - [x] **Konfigurasi CORS:** Menambahkan pengaturan pada Express.js untuk mengizinkan request lintas asal dari domain localhost milik aplikasi Front-End.
 - [x] **Pembuatan Mock API:** Membuat endpoint sementara (`POST /api/predict`) yang langsung mengembalikan struktur JSON statis untuk diuji oleh Front-End.
-- [ ] **Penyusunan Dokumentasi API:** Mencatat endpoint Mock API, header, dan format JSON ke dalam Postman Collection dan mendistribusikannya ke tim Front-End.
-- [ ] **Setup CI/CD Backend:** Mengonfigurasi GitHub Actions untuk menjalankan linting dan pengujian otomatis pada repositori backend.
+- [x] **Penyusunan Dokumentasi API:** Mencatat endpoint Mock API, header, dan format JSON ke dalam Postman Collection dan mendistribusikannya ke tim Front-End.
 
 ### Tahap 2: Infrastruktur Database & Keamanan
 - [ ] **Konfigurasi PostgreSQL di AWS:** Membuat instans basis data relasional di AWS (Amazon RDS) dan mencatat kredensial koneksi.
