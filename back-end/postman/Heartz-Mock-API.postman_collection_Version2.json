@@ -1,0 +1,487 @@
+{
+  "info": {
+    "_postman_id": "b6b6db08-8f1f-4c8d-b2cd-2bafdc2e0a77",
+    "name": "Heartz - Mock API",
+    "description": "Mock API collection untuk project Heartz (Back-End Express 5).\n\nVariables:\n- baseUrl (default: http://localhost:3000)\n- token (default: mock_jwt_header.mock_jwt_payload.mock_jwt_signature)\n\nCatatan:\n- Endpoint protected membutuhkan header: Authorization: Bearer {{token}}\n- POST /api/predict menggunakan multipart/form-data dengan field file bernama \"audio\".",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000", "type": "string" },
+    {
+      "key": "token",
+      "value": "mock_jwt_header.mock_jwt_payload.mock_jwt_signature",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "item": [
+        {
+          "name": "GET / (Health Check)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/", "host": ["{{baseUrl}}"], "path": [""] }
+          },
+          "response": [
+            {
+              "name": "200 OK - Server up",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": { "raw": "{{baseUrl}}/", "host": ["{{baseUrl}}"], "path": [""] }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"success\",\n  \"message\": \"Server Heartz API beroperasi dengan baik\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "POST /api/auth/register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Pengguna Uji Coba\",\n  \"email\": \"pengguna_baru@email.com\",\n  \"password\": \"admin123\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "description": "Mock register.\n\nSkenario error (400): jika email == \"pengguna@email.com\" atau field wajib kosong."
+          },
+          "response": [
+            {
+              "name": "201 Created - Registrasi berhasil",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/register",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "auth", "register"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"success\",\n  \"statusCode\": 201,\n  \"message\": \"Registrasi berhasil.\",\n  \"data\": {\n    \"userId\": \"usr_7739\",\n    \"name\": \"Pengguna Uji Coba\",\n    \"email\": \"pengguna@email.com\"\n  }\n}"
+            },
+            {
+              "name": "400 Bad Request - Email sudah digunakan",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/register",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "auth", "register"]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"error\",\n  \"statusCode\": 400,\n  \"message\": \"Email sudah digunakan oleh akun lain. Silakan gunakan email yang berbeda.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST /api/auth/login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"pengguna@email.com\",\n  \"password\": \"admin123\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Mock login.\n\nJika sukses akan mengembalikan token tiruan. Gunakan token tersebut untuk endpoint protected.\n\nPassword valid (mock): admin123"
+          },
+          "response": [
+            {
+              "name": "200 OK - Login berhasil",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/login",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "auth", "login"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"success\",\n  \"statusCode\": 200,\n  \"message\": \"Login berhasil.\",\n  \"token\": \"mock_jwt_header.mock_jwt_payload.mock_jwt_signature\",\n  \"data\": {\n    \"userId\": \"usr_7739\",\n    \"name\": \"Pengguna Uji Coba\",\n    \"email\": \"pengguna@email.com\"\n  }\n}"
+            },
+            {
+              "name": "401 Unauthorized - Email atau password salah",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/login",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "auth", "login"]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"error\",\n  \"statusCode\": 401,\n  \"message\": \"Email atau kata sandi yang Anda masukkan salah.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST /api/auth/logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "logout"]
+            },
+            "description": "Mock logout. Tidak butuh token."
+          },
+          "response": [
+            {
+              "name": "200 OK - Berhasil logout",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/logout",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "auth", "logout"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"success\",\n  \"statusCode\": 200,\n  \"message\": \"Berhasil keluar. Sesi telah diakhiri.\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Profile (Protected)",
+      "item": [
+        {
+          "name": "GET /api/profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "profile"]
+            },
+            "description": "Protected endpoint. Header: Authorization: Bearer {{token}}"
+          },
+          "response": [
+            {
+              "name": "200 OK - Profile",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                "url": {
+                  "raw": "{{baseUrl}}/api/profile",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "profile"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"success\",\n  \"statusCode\": 200,\n  \"data\": {\n    \"userId\": \"usr_7739\",\n    \"name\": \"Pengguna Uji Coba\",\n    \"email\": \"pengguna@email.com\",\n    \"joinedAt\": \"2026-05-01T10:00:00Z\",\n    \"totalSessions\": 128\n  }\n}"
+            },
+            {
+              "name": "401 Unauthorized - Token invalid/missing",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/profile",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "profile"]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"error\",\n  \"statusCode\": 401,\n  \"message\": \"Akses ditolak. Token tidak valid atau sesi Anda telah berakhir.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "PUT /api/profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Nama Baru Diperbarui\",\n  \"email\": \"pengguna@email.com\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "profile"]
+            },
+            "description": "Protected endpoint. Update nama/email.\n\nSkenario error (400): format data tidak valid."
+          },
+          "response": [
+            {
+              "name": "200 OK - Profile updated",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/profile",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "profile"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"success\",\n  \"statusCode\": 200,\n  \"message\": \"Profil berhasil diperbarui.\",\n  \"data\": {\n    \"userId\": \"usr_7739\",\n    \"name\": \"Nama Baru Diperbarui\",\n    \"email\": \"pengguna@email.com\"\n  }\n}"
+            },
+            {
+              "name": "400 Bad Request - Invalid data",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/profile",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "profile"]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"error\",\n  \"statusCode\": 400,\n  \"message\": \"Format data tidak valid. Pastikan semua kolom diisi dengan benar.\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Predict",
+      "item": [
+        {
+          "name": "POST /api/predict (upload audio)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "audio",
+                  "type": "file",
+                  "description": "Attach file WAV di sini (PCM 16-bit mono 16kHz). Durasi <= 2 detik, akan dinormalisasi jadi 1 detik."
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/predict",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "predict"]
+            },
+            "description": "Mock predict. Upload audio wav via multipart/form-data.\n\nField file: audio\n\nValidasi format: WAV PCM 16-bit mono 16kHz. Durasi input <= 2 detik lalu dinormalisasi jadi 1 detik."
+          },
+          "response": [
+            {
+              "name": "200 OK - Mock prediction",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/predict",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "predict"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"success\",\n  \"statusCode\": 200,\n  \"message\": \"Audio berhasil diproses.\",\n  \"data\": {\n    \"targetSyllable\": \"ba\",\n    \"predictedSyllable\": \"ba\",\n    \"isCorrect\": true,\n    \"accuracyScore\": 0.94,\n    \"waveformMetrics\": [0.12, 0.45, 0.78, 0.89, 0.65, 0.32, 0.10, 0.05],\n    \"affirmation\": \"Luar biasa! Pelafalan suku kata 'ba' Anda sudah sangat konsisten dan mendekati sempurna. Pertahankan posisi bibir tetap rapat di awal suara.\"\n  }\n}"
+            },
+            {
+              "name": "400 Bad Request - Invalid WAV format",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/predict",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "predict"]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"error\",\n  \"statusCode\": 400,\n  \"message\": \"Format file tidak didukung. Sistem hanya menerima file .wav PCM 16-bit mono sample rate 16 kHz.\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "History (Protected)",
+      "item": [
+        {
+          "name": "GET /api/history",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/history",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "history"]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK - History list",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                "url": {
+                  "raw": "{{baseUrl}}/api/history",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "history"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"success\",\n  \"statusCode\": 200,\n  \"results\": 5,\n  \"data\": [\n    {\n      \"sessionId\": \"sess_101\",\n      \"date\": \"2026-05-25T10:00:00Z\",\n      \"targetSyllable\": \"a\",\n      \"isCorrect\": true,\n      \"score\": 0.92\n    },\n    {\n      \"sessionId\": \"sess_102\",\n      \"date\": \"2026-05-25T10:05:00Z\",\n      \"targetSyllable\": \"ba\",\n      \"isCorrect\": false,\n      \"score\": 0.65\n    },\n    {\n      \"sessionId\": \"sess_103\",\n      \"date\": \"2026-05-25T10:07:00Z\",\n      \"targetSyllable\": \"ba\",\n      \"isCorrect\": true,\n      \"score\": 0.88\n    },\n    {\n      \"sessionId\": \"sess_104\",\n      \"date\": \"2026-05-24T15:30:00Z\",\n      \"targetSyllable\": \"ma\",\n      \"isCorrect\": true,\n      \"score\": 0.90\n    },\n    {\n      \"sessionId\": \"sess_105\",\n      \"date\": \"2026-05-24T15:35:00Z\",\n      \"targetSyllable\": \"pa\",\n      \"isCorrect\": false,\n      \"score\": 0.55\n    }\n  ]\n}"
+            },
+            {
+              "name": "401 Unauthorized - Token invalid/missing",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/history",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "history"]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"error\",\n  \"statusCode\": 401,\n  \"message\": \"Akses ditolak. Token tidak valid atau sesi Anda telah berakhir.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET /api/history/summary",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/history/summary",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "history", "summary"]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK - History summary",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                "url": {
+                  "raw": "{{baseUrl}}/api/history/summary",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "history", "summary"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"success\",\n  \"statusCode\": 200,\n  \"data\": {\n    \"week\": \"2026-W21\",\n    \"totalPracticeCount\": 35,\n    \"overallAccuracy\": 0.82,\n    \"mostPracticed\": \"ba\",\n    \"needsImprovement\": \"pa\",\n    \"geminiWeeklyReport\": \"Minggu ini Anda menunjukkan dedikasi yang sangat baik. Akurasi pelafalan vokal Anda stabil, namun mari fokus memberikan tekanan lebih pada bibir untuk suku kata 'pa' di sesi latihan minggu depan.\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET /api/history/:sessionId (sess_102)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/history/sess_102",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "history", "sess_102"]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK - Session detail",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                "url": {
+                  "raw": "{{baseUrl}}/api/history/sess_102",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "history", "sess_102"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"status\": \"success\",\n  \"statusCode\": 200,\n  \"data\": {\n    \"sessionId\": \"sess_102\",\n    \"date\": \"2026-05-25T10:05:00Z\",\n    \"targetSyllable\": \"ba\",\n    \"predictedSyllable\": \"pa\",\n    \"isCorrect\": false,\n    \"score\": 0.65,\n    \"waveformMetrics\": [0.05, 0.20, 0.45, 0.30, 0.15],\n    \"affirmation\": \"Bentuk bibir sudah hampir tepat, namun getaran udara yang dikeluarkan terlalu kuat sehingga terbaca sebagai 'pa'. Coba kurangi letupan udara pada repetisi berikutnya.\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
