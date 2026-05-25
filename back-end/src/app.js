@@ -6,24 +6,35 @@ import { corsOptions } from './config/cors.js';
 import notFound from './middlewares/notFound.js';
 import errorHandler from './middlewares/errorHandler.js';
 
+import predictRoutes from './routes/predictRoutes.js';
+import authRoutes from './routes/authRoutes.js';
+import profileRoutes from './routes/profileRoutes.js';
+import historyRoutes from './routes/historyRoutes.js';
+
 dotenv.config();
 
 const app = express();
 
-// CORS (whitelist-based) + preflight
+// CORS (whitelist-based) + preflight (Express 5 compatible)
 app.use(cors(corsOptions));
 app.options(/.*/, cors(corsOptions));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes (sementara)
+// Root
 app.get('/', (req, res) => {
   res.status(200).json({
     status: 'success',
     message: 'Server Heartz API beroperasi dengan baik',
   });
 });
+
+// Routes
+app.use('/api/predict', predictRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/profile', profileRoutes);
+app.use('/api/history', historyRoutes);
 
 // 404 handler
 app.use(notFound);
