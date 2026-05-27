@@ -39,6 +39,7 @@ data-science2/
 ├── eda/
 │   ├── main.ipynb                          ← NOTEBOOK UTAMA
 │   ├── app.py                              ← DASHBOARD STREAMLIT
+│   ├── ab_testing.ipynb                    ← A/B TESTING
 │   ├── README.md                           ← FILE INI
 │   ├── requirements.txt                    ← DEPENDENCIES
 │   ├── venv/                               ← VIRTUAL ENVIRONMENT
