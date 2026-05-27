@@ -1,0 +1,75 @@
+# Streamlit Configuration for Heartz Dashboard
+# Production-ready configuration for Streamlit Cloud deployment
+
+[client]
+# Show detailed error messages
+showErrorDetails = true
+
+# Show warnings
+showWarningOnDirectoryDelete = true
+
+# Maximum file upload size (MB)
+maxUploadSize = 200
+
+# Timeout for app reruns
+timeout = 300
+
+# Enable wide mode by default
+toolbarMode = "minimal"
+
+[server]
+# Port configuration
+port = 8501
+
+# Run in headless mode (for cloud deployment)
+headless = true
+
+# Enable CORS for API requests
+enableCORS = true
+
+# Maximum message size (MB)
+maxMessageSize = 200
+
+# Enable WebSocket message compression
+enableXsrfProtection = true
+
+[logger]
+# Log level
+level = "info"
+
+# Log message format
+messageFormat = "%(asctime)s.%(msecs)03d [%(levelname)s] %(name)s: %(message)s"
+
+[theme]
+# Color scheme
+primaryColor = "#1f77b4"
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#f0f2f6"
+textColor = "#262730"
+
+# Font family
+font = "sans serif"
+
+[deprecation]
+# Show deprecation warnings
+showPyplotGlobalUse = false
+showFileUploaderEncoding = false
+
+[browser]
+# Browser configuration
+gatherUsageStats = true
+serverAddress = "localhost"
+
+[runner]
+# Runner configuration (for local development)
+magicEnabled = true
+fastReruns = true
+
+[logger]
+level = "info"
+
+# Configuration notes:
+# - This config is used for both local development and cloud deployment
+# - For Streamlit Cloud, some settings are overridden automatically
+# - To override locally: create ~/.streamlit/config.toml (user-level)
+# - For project-level: keep this file in data-science2/.streamlit/config.toml
