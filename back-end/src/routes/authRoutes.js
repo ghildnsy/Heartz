@@ -1,10 +1,11 @@
-import { Router } from 'express';
-import { registerMock, loginMock, logoutMock } from '../controllers/authController.js';
+import express from 'express';
+import { register, login, logout, refresh } from '../controllers/authController.js';
 
-const router = Router();
+const router = express.Router();
 
-router.post('/register', registerMock);
-router.post('/login', loginMock);
-router.post('/logout', logoutMock);
+router.post('/register', register);
+router.post('/login', login);
+router.post('/logout', logout);
+router.post('/refresh', refresh); //
 
 export default router;

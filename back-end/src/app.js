@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser'; // 🌟 1. Impor cookie-parser di sini
 
 import { corsOptions } from './config/cors.js';
 import notFound from './middlewares/notFound.js';
@@ -21,6 +22,7 @@ app.options(/.*/, cors(corsOptions));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser()); // 🌟 2. Pasang di sini agar semua request mengekstrak cookie sebelum masuk ke rute
 
 // Root
 app.get('/', (req, res) => {

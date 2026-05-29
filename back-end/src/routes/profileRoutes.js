@@ -1,10 +1,11 @@
 import { Router } from 'express';
-import mockAuth from '../middlewares/mockAuth.js';
-import { getProfileMock, updateProfileMock } from '../controllers/profileController.js';
+import auth from '../middlewares/auth.js';
+import { getProfile, updateProfile } from '../controllers/profileController.js';
 
 const router = Router();
 
-router.get('/', mockAuth, getProfileMock);
-router.put('/', mockAuth, updateProfileMock);
+// Jalur rute terproteksi penuh menggunakan pengontrol database riyal
+router.get('/', auth, getProfile);
+router.put('/', auth, updateProfile);
 
 export default router;
