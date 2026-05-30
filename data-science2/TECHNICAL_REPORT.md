@@ -2,9 +2,6 @@
 ## Syllable Audio Features Analysis & ML-Ready Dataset
 
 **Project**: Heartz - AI-Powered Speech Therapy Platform  
-**Module**: Data Science - Audio Feature Engineering & EDA  
-**Date**: May 2026  
-**Status**: ✅ Production Ready (Phase 1)  
 
 ---
 
@@ -634,9 +631,6 @@ Test Set (15%): 525 samples
 
 ---
 
-**Document Version**: 1.0  
-**Last Updated**: May 27, 2026  
-**Status**: ✅ Complete & Approved  
-**Confidentiality**: Internal Use
+**Last Updated**: May 2026  
 
 ---
