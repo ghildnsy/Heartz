@@ -20,6 +20,7 @@ param(
   [int]$Port = 8000,
   [int]$MaxSamples = 0,
   [string]$WavPath = "data/clean_wav/A/A_0001.wav",
+  [string]$Target = "",
   [string]$MetricsOut = "outputs/metrics.json",
   [string]$PredictOut = "outputs/predict_demo.json",
   [switch]$FailOnThresholds
@@ -102,7 +103,11 @@ try {
   $wavFull = (Resolve-Path $WavPath).Path
   $predictUrl = "$baseUrl/predict"
 
-  $predictJson = & curl.exe -s -X POST $predictUrl -F "file=@$wavFull"
+  if ($Target) {
+    $predictJson = & curl.exe -s -X POST $predictUrl -F "file=@$wavFull" -F "target=$Target"
+  } else {
+    $predictJson = & curl.exe -s -X POST $predictUrl -F "file=@$wavFull"
+  }
   if ($LASTEXITCODE -ne 0 -or -not $predictJson) {
     throw "curl.exe request failed. Check that the server is running and the WAV path is valid."
   }

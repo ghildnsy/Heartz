@@ -1,7 +1,7 @@
 {
-  "num_samples": 200,
+  "num_samples": 6096,
   "accuracy": 1.0,
-  "mae": 0.010213795118033886,
+  "mae": 0.008214980860062315,
   "thresholds": {
     "accuracy": 0.85,
     "mae": 0.02

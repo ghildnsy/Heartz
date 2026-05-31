@@ -1,0 +1,77 @@
+{
+  "info": {
+    "_postman_id": "b7edc3ee-4a0f-4f2b-9e6f-9d24f2d9b7a1",
+    "name": "Heartz ML API",
+    "description": "Heartz ML inference API (FastAPI). Endpoints: /health and /predict (multipart WAV upload). /predict supports optional verification via a 'target' label.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Predict (Classify)",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "description": "Upload a .wav file"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/predict",
+          "host": ["{{baseUrl}}"],
+          "path": ["predict"]
+        },
+        "description": "Classification only. Upload a WAV file under form-data field name 'file'."
+      },
+      "response": []
+    },
+    {
+      "name": "Predict (Verify w/ target)",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "description": "Upload a .wav file"
+            },
+            {
+              "key": "target",
+              "value": "Ba",
+              "type": "text",
+              "description": "Target label selected by the user (e.g., Ba, A, O)."
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/predict",
+          "host": ["{{baseUrl}}"],
+          "path": ["predict"]
+        },
+        "description": "Verification mode. Sends 'target' and returns extra fields: match, score/target_confidence, margin, target_rank, threshold, pass_soft, pass_strict."
+      },
+      "response": []
+    }
+  ]
+}
