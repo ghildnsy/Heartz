@@ -1,35 +1,35 @@
-# 🎵 YouTube Audio Scraper & Data Augmentation Pipeline
+# YouTube Audio Scraper & Data Augmentation Pipeline
 
 Pipeline lengkap untuk scraping audio dari YouTube, pemrosesan audio, transkripsi dengan WhisperX, ekstraksi fitur suku kata Bahasa Indonesia, dan augmentasi data untuk dataset machine learning.
 
-**Status**: ✅ Fully Functional (2-Stage Consolidation + Augmentation Pipeline)
+**Status**: Fully Functional (2-Stage Consolidation + Augmentation Pipeline)
 
 ---
 
-## 📋 Daftar Isi
+## Daftar Isi
 
 1. [Persyaratan Sistem](#-persyaratan-sistem)
 2. [Instalasi Lengkap](#-instalasi-lengkap)
-3. [Workflow Overview](#-workflow-overview) ← **START HERE**
+3. [Workflow Overview](#-workflow-overview)
 4. [Panduan Langkah demi Langkah](#-panduan-langkah-demi-langkah)
 5. [Struktur Project](#-struktur-project)
 6. [Troubleshooting](#-troubleshooting)
 
 ---
 
-## 🔧 Persyaratan Sistem
+## Persyaratan Sistem
 
 ### Software yang HARUS Diinstall:
 
 | Requirement | Version | Tujuan | Platform |
 |---|---|---|---|
-| **Python** | 3.8 - 3.13.13 ⚠️ | Runtime environment | Windows/Mac/Linux |
+| **Python** | 3.8 - 3.13.13 | Runtime environment | Windows/Mac/Linux |
 | **FFmpeg** | 4.0+ | Audio encoding/decoding | Windows/Mac/Linux |
 | **Node.js** | 14+ | Untuk beberapa tools | Windows/Mac/Linux |
 | **Pip** | Latest | Python package manager | Included with Python |
 | **Jupyter** | Latest | Notebook environment | Via pip |
 
-> ⚠️ **PENTING**: Project ini **HANYA kompatibel dengan Python 3.13.13 ke bawah**. Jangan gunakan Python 3.13 atau lebih tinggi karena akan menyebabkan error pada library dependencies (terutama WhisperX dan librosa). Pastikan install Python versi 3.8 - 3.13.13.
+> **PENTING**: Project ini **HANYA kompatibel dengan Python 3.13.13 ke bawah**. Jangan gunakan Python 3.13 atau lebih tinggi karena akan menyebabkan error pada library dependencies (terutama WhisperX dan librosa). Pastikan install Python versi 3.8 - 3.13.13.
 
 ### Hardware Minimum:
 - **RAM**: 8 GB minimum (16+ GB recommended)
@@ -39,7 +39,7 @@ Pipeline lengkap untuk scraping audio dari YouTube, pemrosesan audio, transkrips
 
 ---
 
-## 📦 Instalasi Lengkap
+## Instalasi Lengkap
 
 ### Step 1: Install Python dan pip
 
@@ -47,7 +47,7 @@ Pipeline lengkap untuk scraping audio dari YouTube, pemrosesan audio, transkrips
 ```bash
 # Download dari https://www.python.org/downloads/
 # Pilih Python 3.8, 3.9, 3.10, 3.11, atau 3.13.13
-# ⚠️ JANGAN PILIH Python 3.13.13+ (TIDAK KOMPATIBEL)
+# JANGAN PILIH Python 3.13.13+ (TIDAK KOMPATIBEL)
 # PENTING: Checklist "Add Python to PATH" saat install
 
 # Verifikasi instalasi:
@@ -136,7 +136,7 @@ pip install -r requirements.txt
 
 ```bash
 # Test libraries
-python -c "import numpy, pandas, librosa, soundfile; print('✅ All OK')"
+python -c "import numpy, pandas, librosa, soundfile; print('All OK')"
 
 # Test FFmpeg
 ffmpeg -version | head -1
@@ -147,7 +147,7 @@ jupyter --version
 
 ---
 
-## 🔄 Workflow Overview
+## Workflow Overview
 
 Pipeline terdiri dari **2 NOTEBOOK UTAMA** dengan **3 STAGE PROCESSING**:
 
@@ -209,7 +209,7 @@ Pipeline terdiri dari **2 NOTEBOOK UTAMA** dengan **3 STAGE PROCESSING**:
                   (Data siap untuk training ML)
 ```
 
-### 🎯 Complete Execution Checklist
+### Complete Execution Checklist
 
 #### FIRST TIME SETUP:
 - [ ] Install Python 3.8+
@@ -225,20 +225,20 @@ Pipeline terdiri dari **2 NOTEBOOK UTAMA** dengan **3 STAGE PROCESSING**:
 - [ ] Input YouTube URL / Select scraper run
 - [ ] Wait for completion (5-15 min)
 - [ ] Run Cell 16-18 (Verify results)
-- [ ] ✅ Check output: `extracted_syllables_1/`, `extracted_syllables_2/`, dll
+- [ ] Check output: `extracted_syllables_1/`, `extracted_syllables_2/`, dll
 - [ ] Optional: Repeat untuk multiple videos/runs
 
 #### STAGE 2-3 - Augmentation (augmentation.ipynb):
-- [ ] ⚠️ PASTIKAN scraping.ipynb sudah dijalankan terlebih dahulu!
+- [ ] PASTIKAN scraping.ipynb sudah dijalankan terlebih dahulu!
 - [ ] Run Cell 1-5 (Setup & check input data)
 - [ ] Verify found extracted_syllables folders
 - [ ] Run Cell 6-7 (Review configuration)
 - [ ] Run Cell 8-11 (Execute 2-Stage pipeline)
 - [ ] Wait for completion (15-40 min)
 - [ ] Run Cell 12-13 (View results)
-- [ ] ✅ Check output: `augmented_1/`, `augmented_2/`, dll
+- [ ] Check output: `augmented_1/`, `augmented_2/`, dll
 
-### 📊 Data Flow Visualization
+### Data Flow Visualization
 
 ```
 YouTube URLs
@@ -287,7 +287,7 @@ YouTube URLs
 
 ---
 
-## 📍 Panduan Langkah demi Langkah
+## Panduan Langkah demi Langkah
 
 ### Persiapan Awal (Setup Environment)
 
@@ -342,10 +342,10 @@ jupyter notebook
 ```
 
 **Catatan:**
-- ⏸️ **Untuk memberhentikan cell**: Tekan **Ctrl + C** di terminal atau click "⏹" button di Jupyter
-- 🔄 **Untuk re-run cell**: Click cell > Press **Ctrl + Enter**
-- 📝 **Untuk edit code**: Double-click cell > edit > Ctrl + Enter
-- 💾 **Save notebook**: Ctrl + S atau File → Save
+- **Untuk memberhentikan cell**: Tekan **Ctrl + C** di terminal atau click stop button di Jupyter
+- **Untuk re-run cell**: Click cell > Press **Ctrl + Enter**
+- **Untuk edit code**: Double-click cell > edit > Ctrl + Enter
+- **Save notebook**: Ctrl + S atau File → Save
 
 ### Workflow Step 1: YouTube Scraping (scraping.ipynb)
 
@@ -353,10 +353,10 @@ jupyter notebook
 
 **Langkah-langkah di Notebook**:
 
-1. **Cell 1-2** (📖 Markdown): Header & Project overview
+1. **Cell 1-2** (Markdown): Header & Project overview
    - Baca section ini untuk memahami pipeline
 
-2. **Cell 3** (✅ Setup & Imports):
+2. **Cell 3** (Setup & Imports):
    ```python
    # Jalankan cell ini untuk import SEMUA libraries
    # Output yang ditampilkan:
@@ -367,14 +367,14 @@ jupyter notebook
    # ✓ Next run akan menggunakan index: 1
    ```
 
-3. **Cell 4-5** (🔧 System Requirements Check):
+3. **Cell 4-5** (System Requirements Check):
    ```python
    # Jalankan untuk verifikasi FFmpeg sudah terinstall
    # Jika belum: install FFmpeg sesuai instruksi
    # Output: Status FFmpeg version
    ```
 
-4. **Cell 6-15** (🔊 Extract & Enhance Audio Syllables):
+4. **Cell 6-15** (Extract & Enhance Audio Syllables):
    - **Configuration**: Review/edit TARGET_SYLLABLES dan enhancement settings
    - **Select Run**: Pilih mana scraper run yang akan diproses (atau 'latest')
    - **Execute Extraction**: Main cell yang melakukan:
@@ -384,7 +384,7 @@ jupyter notebook
      4. Extract features (MFCC, RMS, ZCR, F0, dll)
      5. Save ke extracted_syllables_[N]/ (1:1 mapping dengan scraper run)
 
-5. **Cell 16-18** (✨ Verification):
+5. **Cell 16-18** (Verification):
    ```python
    # Verify hasil extraction
    # Tampilkan sample dari extracted files per label
@@ -414,30 +414,30 @@ scraped/
 
 **Notebook**: `augmentation.ipynb`
 
-**⚠️ PENTING**: Jalankan `scraping.ipynb` TERLEBIH DAHULU untuk generate `extracted_syllables_[X]/` folders!
+**PENTING**: Jalankan `scraping.ipynb` TERLEBIH DAHULU untuk generate `extracted_syllables_[X]/` folders!
 
 **Langkah-langkah di Notebook**:
 
-1. **Cell 1-2** (📖 Markdown): Header & 2-Stage overview
+1. **Cell 1-2** (Markdown): Header & 2-Stage overview
    - Baca section ini untuk memahami 2-Stage Consolidation pipeline
 
-2. **Cell 3** (✅ Setup & Imports):
+2. **Cell 3** (Setup & Imports):
    ```python
    # Jalankan cell ini untuk import SEMUA augmentation libraries
    # Output: ✓ Semua module berhasil diimport
    ```
 
-3. **Cell 4-5** (🔍 Check Available extracted_syllables):
+3. **Cell 4-5** (Check Available extracted_syllables):
    ```python
    # Jalankan untuk melihat SEMUA extracted_syllables_[X] yang tersedia
    # Output:
-   # 📥 Found 2 extracted_syllables folder(s)
+   # Found 2 extracted_syllables folder(s)
    #    Indices: [1, 2]
    #    Source folders akan dikonsolidasikan
    ```
    - Jika tidak ada folder: Jalankan `scraping.ipynb` terlebih dahulu
 
-4. **Cell 6-7** (⚙️ Configuration Display):
+4. **Cell 6-7** (Configuration Display):
    ```python
    # Review augmentation configuration
    # - TARGET_SAMPLES_PER_LABEL: 200 files per label target
@@ -446,9 +446,9 @@ scraped/
    # - Lainnya: duration normalization, RMS normalization
    ```
 
-5. **Cell 8-11** (🚀 MAIN PIPELINE - 2-Stage Execution):
+5. **Cell 8-11** (MAIN PIPELINE - 2-Stage Execution):
 
-   **STAGE 1️⃣ - CONSOLIDATION**:
+   **STAGE 1 - CONSOLIDATION**:
    ```
    INPUT: extracted_syllables_1/, extracted_syllables_2/, ...
           (Semua extracted_syllables folders)
@@ -462,7 +462,7 @@ scraped/
    (Temporary folder untuk Stage 2)
    ```
 
-   **STAGE 2️⃣ - AUGMENTATION**:
+   **STAGE 2 - AUGMENTATION**:
    ```
    INPUT: extracted_syllables_consolidated/ (hasil merge dari Stage 1)
    
@@ -479,15 +479,15 @@ scraped/
    (Sequential index independent dari input)
    ```
 
-6. **Cell 12-13** (📊 Results Analysis):
+6. **Cell 12-13** (Results Analysis):
    ```python
    # Jalankan untuk melihat hasil consolidation & augmentation
    # Output:
-   # ✅ CONSOLIDATION REPORT:
+   # CONSOLIDATION REPORT:
    #    - Source folders: [1, 2]
    #    - Files per label
    #    - Total files consolidated
-   # ✅ AUGMENTATION REPORT:
+   # AUGMENTATION REPORT:
    #    - Input files vs Output files (augmentation ratio)
    #    - Before/After comparison per label
    #    - Percentage increase
@@ -520,7 +520,7 @@ scraped/
 
 ---
 
-## 📁 Struktur Project
+## Struktur Project
 
 ```
 data-science2/
@@ -542,7 +542,7 @@ data-science2/
 └── REFACTORING_NOTES.md               # Refactoring & clean code notes
 ```
 
-## 📦 Module Descriptions
+## Module Descriptions
 
 ### Scraping Modules
 
@@ -636,7 +636,7 @@ Main pipeline untuk augmentation dengan indexed paths:
 - `get_source_data()` - Get source directory
 - `copy_source_to_target()` - Copy files dari source ke target
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Installation
 
@@ -736,7 +736,7 @@ result = augmentation_pipeline.run_augmentation_pipeline(source_run_index=latest
 print(f"Augmentation #{result['aug_index']} done!")
 ```
 
-## 📊 Output Dataset
+## Output Dataset
 
 Output CSV berisi kolom-kolom berikut:
 
@@ -754,7 +754,7 @@ Output CSV berisi kolom-kolom berikut:
 | `mfcc_1_mean` to `mfcc_13_mean` | float | MFCC mean coefficients |
 | `mfcc_1_std` to `mfcc_13_std` | float | MFCC std coefficients |
 
-## ⚙️ Configuration
+## Configuration
 
 ### Scraping Configuration (libs/config.py)
 
@@ -795,36 +795,36 @@ ENABLE_RMS_NORMALIZATION = True
 
 **Edit config files sesuai kebutuhan experiment anda.**
 
-## ✨ Features
+## Features
 
 ### Scraping Pipeline
-- ✅ YouTube video download dengan yt-dlp
-- ✅ Audio preprocessing (denoise, bandpass filter, normalization)
-- ✅ Indonesian speech-to-text dengan WhisperX
-- ✅ Syllable segmentation dan audio splitting
-- ✅ 18-feature extraction (MFCC, RMS, ZCR, F0, spectral centroid)
-- ✅ Automatic syllable CSV generation
-- ✅ Indexed paths (auto-incrementing folder names)
+- YouTube video download dengan yt-dlp
+- Audio preprocessing (denoise, bandpass filter, normalization)
+- Indonesian speech-to-text dengan WhisperX
+- Syllable segmentation dan audio splitting
+- 18-feature extraction (MFCC, RMS, ZCR, F0, spectral centroid)
+- Automatic syllable CSV generation
+- Indexed paths (auto-incrementing folder names)
 
 ### Augmentation Pipeline
-- ✅ Pitch shifting (-4 to +4 semitone)
-- ✅ Time stretching (0.9x to 1.1x)
-- ✅ Duration normalization (pad/truncate)
-- ✅ RMS normalization untuk volume consistency
-- ✅ Automatic target count augmentation (200 per label)
-- ✅ Batch augmentation untuk multiple runs
-- ✅ Augmentation reporting dan statistics
-- ✅ Indexed augmentation runs
+- Pitch shifting (-4 to +4 semitone)
+- Time stretching (0.9x to 1.1x)
+- Duration normalization (pad/truncate)
+- RMS normalization untuk volume consistency
+- Automatic target count augmentation (200 per label)
+- Batch augmentation untuk multiple runs
+- Augmentation reporting dan statistics
+- Indexed augmentation runs
 
 ### Code Quality
-- ✅ Modular architecture (split ke libs/)
-- ✅ Clean code principles (single responsibility, DRY)
-- ✅ Type hints & docstrings
-- ✅ Comprehensive error handling
-- ✅ Configurable via config files
-- ✅ Reusable functions & pipelines
+- Modular architecture (split ke libs/)
+- Clean code principles (single responsibility, DRY)
+- Type hints & docstrings
+- Comprehensive error handling
+- Configurable via config files
+- Reusable functions & pipelines
 
-## 🔄 Processing Pipeline Detail
+## Processing Pipeline Detail
 
 Setiap video YouTube melalui tahapan berikut:
 
@@ -863,7 +863,7 @@ Audio chunks → Extract features (MFCC, RMS, ZCR, F0, Centroid) → Feature vec
 Feature vectors → Create DataFrame → Save to CSV
 ```
 
-## 🎯 Audio Features Explained
+## Audio Features Explained
 
 ### Basic Energy Features:
 - **ZCR (Zero Crossing Rate)**: Jumlah sign changes per frame, indikasi fricative consonants
@@ -878,7 +878,7 @@ Feature vectors → Create DataFrame → Save to CSV
   - Mean: Rata-rata fitur
   - Std: Variasi fitur
 
-## 💡 Tips & Tricks
+## Tips & Tricks
 
 ### Penggunaan GPU
 - Jika GPU tersedia, WhisperX otomatis menggunakan CUDA
@@ -903,7 +903,7 @@ Feature vectors → Create DataFrame → Save to CSV
   df_filtered = df[df['duration_sec'] > 0.05]  # Filter suku kata > 50ms
   ```
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### Error: "Module not found"
 ```
@@ -933,7 +933,7 @@ Ini normal. WhisperX membutuhkan waktu karena:
 Gunakan GPU untuk percepatan 5-10x
 ```
 
-## 📝 Example Usage
+## Example Usage
 
 ### Single Video Processing
 ```python
@@ -973,7 +973,7 @@ plt.ylabel('Count')
 plt.show()
 ```
 
-## 📚 Dependencies
+## Dependencies
 
 - **librosa**: Audio processing
 - **scipy**: Signal processing (bandpass filter)
@@ -988,4 +988,4 @@ plt.show()
 
 ---
 
-**Last Updated**: May 19, 2026
+**Last Updated**: June 2026

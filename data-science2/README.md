@@ -1,9 +1,9 @@
-# 🎵 Heartz - Data Science Phase
+# Heartz - Data Science Phase
 ## AI-Powered Speech Therapy Platform for Deaf Community
 
 ---
 
-## 📖 TABLE OF CONTENTS
+## TABLE OF CONTENTS
 
 - [Quick Start](#-quick-start)
 - [Project Overview](#-project-overview)
@@ -13,29 +13,30 @@
 
 ---
 
-## 🚀 QUICK START
+## QUICK START
 
-### For First-Time Users: Start Here 👇
+### For First-Time Users: Start Here
 
-1. **Understand the Project**
-   - Read: [TECHNICAL_REPORT.md](#-technical-report-comprehensive-analysis)
+1. **Read the Main Report**
+   - [**Laporan Teknis Komprehensif.pdf**](#-laporan-teknis-komprehensif-main-report) - Laporan lengkap dengan analisis mendalam
    
-2. **Learn About Features**
-   - Read: [DATA_DICTIONARY.md](#-data-dictionary-feature-documentation)
+2. **Explore Interactive Dashboard**
+   - [Streamlit App](eda/app.py) - Visualisasi data interaktif
    
-3. **See the Dashboard**
-   - Go to: [`eda/app.py`](#eda-module---exploratory-data-analysis) (Streamlit app)
+3. **Dive into Details**
+   - [DATA_DICTIONARY.md](#-data-dictionarymd-feature-documentation) - Dokumentasi fitur lengkap
+   - [Main Notebook](eda/main.ipynb) - Analisis detail dengan 34 cells
 
 ---
 
-## 📊 PROJECT OVERVIEW
+## PROJECT OVERVIEW
 
 ### What is Heartz?
 
 **Heartz** adalah platform terapi wicara berbasis AI yang dirancang khusus untuk membantu penyandang disabilitas rungu (Tuli) dalam melatih artikulasi lisan secara:
-- ✅ Konsisten
-- ✅ Terjangkau
-- ✅ Fleksibel (dari rumah)
+- Konsisten
+- Terjangkau
+- Fleksibel (dari rumah)
 
 ### Data Science Phase Goal
 
@@ -45,102 +46,106 @@
 
 | Metric | Value | Status |
 |--------|-------|--------|
-| **Samples Collected** | 3,500+ | ✅ Complete |
-| **Syllables Covered** | 20 (5V + 15C) | ✅ Complete |
-| **Features Engineered** | 38 acoustic | ✅ Complete |
-| **Missing Values** | 0% | ✅ Excellent |
-| **EDA Cells** | 34 | ✅ Comprehensive |
-| **Dashboard Pages** | 9 | ✅ Production-Ready |
-| **A/B Tests** | 2 | ✅ Significant Results |
+| **Samples Collected** | 4.000+ | Complete |
+| **Syllables Covered** | 20 (5V + 15C) | Complete |
+| **Features Engineered** | 38 acoustic | Complete |
+| **Missing Values** | 0% | Excellent |
+| **EDA Cells** | 34 | Comprehensive |
+| **Dashboard Pages** | 9 | Production-Ready |
+| **A/B Tests** | 2 | Significant Results |
 
 ---
 
-## 📁 PROJECT STRUCTURE
+## PROJECT STRUCTURE
 
 ```
 data-science2/
 │
-├── 📄 README.md                          ← YOU ARE HERE
-├── 📄 TECHNICAL_REPORT.md                ← Main deliverable (800 lines)
-├── 📄 DATA_DICTIONARY.md                 ← Feature documentation (500 lines)
-├── 📄 ab_testing.ipynb                   ← A/B testing implementation
+├── README.md                          ← YOU ARE HERE
+├── Laporan Teknis Komprehensif.pdf    ← Main Report (Comprehensive)
+├── TECHNICAL_REPORT.md                ← Supporting documentation
+├── DATA_DICTIONARY.md                 ← Feature documentation
+├── ab_testing.ipynb                   ← A/B testing implementation
 │
-├── 📁 eda/                               ← EDA MODULE (Primary)
-│   ├── main.ipynb                        ← Main notebook (34 cells)
-│   ├── app.py                            ← Dashboard (9 pages, Streamlit)
-│   ├── requirements.txt                  ← Dependencies
+├── eda/                               ← EDA MODULE (Primary)
+│   ├── main.ipynb                     ← Main notebook (34 cells)
+│   ├── app.py                         ← Dashboard (9 pages, Streamlit)
+│   ├── requirements.txt               ← Dependencies
 │   └── dataset/
-│       ├── syllable_features.csv         ← ML-ready dataset
-│       └── figs/                         ← Visualization outputs
+│       ├── syllable_features.csv      ← ML-ready dataset
+│       └── figs/                      ← Visualization outputs
 │
-├── 📁 preprocessing/                     ← AUDIO PREPROCESSING MODULE
-│   ├── audio_preprocessing.ipynb         ← Audio cleaning pipeline
-│   └── venv/                             ← Virtual environment
+├── preprocessing/                     ← AUDIO PREPROCESSING MODULE
+│   ├── audio_preprocessing.ipynb      ← Audio cleaning (standalone)
+│   └── venv/                          ← Virtual environment
 │
-├── 📁 scraping/                          ← DATA GATHERING MODULE
-│   ├── scraping.ipynb                    ← YouTube scraper
-│   ├── augmentation.ipynb                ← Data augmentation
-│   ├── requirements.txt                  ← Dependencies
-│   ├── libs/                             ← Audio processing library
+├── scraping/                          ← DATA GATHERING MODULE
+│   ├── scraping.ipynb                 ← YouTube scraper
+│   ├── augmentation.ipynb             ← Data augmentation
+│   ├── requirements.txt               ← Dependencies
+│   ├── libs/                          ← Audio processing library
 │   │   ├── scraper.py
 │   │   ├── audio_processor.py
 │   │   ├── audio_augmenter.py
 │   │   └── ...
-│   └── scraped/                          ← Output data
+│   └── scraped/                       ← Output data
 │
-├── 📁 .streamlit/                        ← DEPLOYMENT CONFIG
-│   └── config.toml                       ← Streamlit production config
+├── .streamlit/                        ← DEPLOYMENT CONFIG
+│   └── config.toml                    ← Streamlit production config
 │
 └── .gitignore
 ```
 
 ---
 
-## 📄 KEY DOCUMENTS
+## KEY DOCUMENTS
 
-### 🌟 TECHNICAL_REPORT.md (Comprehensive Analysis)
+### Laporan Teknis Komprehensif (Main Report)
 
-**Purpose**: Main technical report for capstone submission
+**File**: [`Laporan Teknis Komprehensif.pdf`](Laporan%20Teknis%20Komprehensif.pdf)
 
-**Contains**:
-- ✅ Executive Summary
-- ✅ Problem Statement & Methodology
-- ✅ Data Wrangling Process (3 stages: Gathering, Assessing, Cleaning)
-- ✅ EDA Findings with Statistical Analysis
-- ✅ Feature Engineering Details (38 features breakdown)
-- ✅ Business Questions & Hypothesis Testing
-- ✅ A/B Testing Results with p-values
-- ✅ Recommendations & Next Steps
-- ✅ Deployment Guide
+**Purpose**: Laporan teknis komprehensif untuk capstone submission
 
-**Where to Read**: [TECHNICAL_REPORT.md](TECHNICAL_REPORT.md)
+**Berisi**:
+- Problem Discovery
+- Ideation & Research
+- Perancangan & Spesifikasi Teknis
+- Pelaksanaan & Pengembangan
+- Hasil Akhir & Implementasi
 
 ---
 
-### 📖 DATA_DICTIONARY.md (Feature Documentation)
+### DATA_DICTIONARY.md (Feature Reference)
 
-**Purpose**: Complete documentation for all 38 features in dataset
+**File**: [`DATA_DICTIONARY.md`](DATA_DICTIONARY.md)
 
-**Contains**:
-- ✅ Feature descriptions & data types
-- ✅ Value ranges & units
-- ✅ Statistical summaries
-- ✅ Feature importance ranking
-- ✅ Data quality metrics
-- ✅ Usage guidelines for ML
+**Purpose**: Dokumentasi referensi cepat untuk semua 38 fitur
 
-**Features Documented**:
-- 5 Basic acoustic features (Duration, ZCR, RMS, Spectral Centroid, F0)
-- 26 MFCC features (13 coefficients × mean + std)
-- 2 Derived features (syllable_type, consonant_type)
-
-**Where to Read**: [DATA_DICTIONARY.md](DATA_DICTIONARY.md)
+**Berisi**:
+- Deskripsi fitur & tipe data
+- Range nilai & unit
+- Statistik ringkas
+- Feature importance ranking
+- Metrik kualitas data
+- Guidelines untuk ML
 
 ---
 
-## 📂 SUBMODULES
+### TECHNICAL_REPORT.md (Technical Details)
 
-### 🔬 EDA Module - Exploratory Data Analysis
+**File**: [`TECHNICAL_REPORT.md`](TECHNICAL_REPORT.md)
+
+**Purpose**: Dokumentasi teknis mendalam untuk developer
+
+**Kegunaan**: Referensi detail untuk understanding implementasi
+
+**Gunakan untuk**: Deep dive ke metodologi & hasil analisis
+
+---
+
+## SUBMODULES
+
+### EDA Module - Exploratory Data Analysis
 
 **Location**: [`eda/`](eda/)
 
@@ -152,17 +157,17 @@ data-science2/
   - Visualization generation
   
 - **app.py**: 9-page interactive Streamlit dashboard
-  - 📊 Dashboard Utama (Overview)
-  - 📈 Analisis Fitur Utama (Feature distributions)
-  - 🎼 MFCC Analysis (13 coefficients)
-  - 🔗 Korelasi Fitur (Correlation matrix)
-  - 📉 Stabilitas Fitur (Robustness analysis)
-  - 🔤 Konsonan vs Vokal (Statistical comparison)
-  - 🗣️ Analisis Tipe Konsonan (Consonant types)
-  - ⏱️ Analisis Durasi (Duration patterns)
-  - 📊 Data Insights (Key findings)
+  - Dashboard Utama (Overview)
+  - Analisis Fitur Utama (Feature distributions)
+  - MFCC Analysis (13 coefficients)
+  - Korelasi Fitur (Correlation matrix)
+  - Stabilitas Fitur (Robustness analysis)
+  - Konsonan vs Vokal (Statistical comparison)
+  - Analisis Tipe Konsonan (Consonant types)
+  - Analisis Durasi (Duration patterns)
+  - Data Insights (Key findings)
 
-- **dataset/syllable_features.csv**: ML-ready dataset (3,500+ samples)
+- **dataset/syllable_features.csv**: ML-ready dataset (4.000+ samples)
 - **dataset/figs/**: Generated visualizations
 
 **Run Dashboard Locally**:
@@ -178,7 +183,7 @@ streamlit run app.py
 
 ---
 
-### 🔊 Preprocessing Module - Audio Cleaning (Standalone)
+### Preprocessing Module - Audio Cleaning (Standalone)
 
 **Location**: [`preprocessing/`](preprocessing/)
 
@@ -208,7 +213,7 @@ Raw Audio → Bandpass Filter → Denoise → Normalize → Processed Audio
 
 ---
 
-### 📥 Scraping Module - Data Collection
+### Scraping Module - Data Collection
 
 **Location**: [`scraping/`](scraping/)
 
@@ -238,9 +243,8 @@ Raw Audio → Bandpass Filter → Denoise → Normalize → Processed Audio
   - `extracted_syllables_1/` - Extracted syllables
 
 **Data Collection Statistics**:
-- Total Samples: 3,500+
+- Total Samples: 4.000+
 - Syllables: 20 (5 vowels + 15 consonants)
-- Augmentation Ratio: 2.3x (1,500 → 3,500+)
 - Data Quality: SNR 28±8 dB
 
 **How to Use**:
@@ -250,25 +254,22 @@ Raw Audio → Bandpass Filter → Denoise → Normalize → Processed Audio
 
 ---
 
-## 🔗 QUICK NAVIGATION
+## QUICK NAVIGATION
 
-### Documentation
-| Document | Purpose | Read Time |
-|----------|---------|-----------|
-| [TECHNICAL_REPORT.md](TECHNICAL_REPORT.md) | Main analysis report |
-| [DATA_DICTIONARY.md](DATA_DICTIONARY.md) | Feature documentation |
+### Primary Documents
+| Document | Purpose |
+|----------|---------|
+| [Laporan Teknis Komprehensif.pdf](Laporan%20Teknis%20Komprehensif.pdf) | **START HERE** - Complete technical report |
+| [DATA_DICTIONARY.md](DATA_DICTIONARY.md) | Feature reference & specifications |
 
-
-### Code & Data
+### Code & Tools
 | Module | Location | Purpose |
 |--------|----------|---------|
-| Main EDA | [eda/main.ipynb](eda/main.ipynb) | 34-cell analysis notebook |
-| Dashboard | [eda/app.py](eda/app.py) | 9-page Streamlit app |
-| Dataset | [eda/dataset/syllable_features.csv](eda/dataset/syllable_features.csv) | ML-ready data (3,500+ samples) |
-| A/B Tests | [ab_testing.ipynb](ab_testing.ipynb) | Statistical A/B testing |
-| Preprocessing | [preprocessing/audio_preprocessing.ipynb](preprocessing/audio_preprocessing.ipynb) | Audio cleaning pipeline (Standalone) |
-| Data Gathering | [scraping/scraping.ipynb](scraping/scraping.ipynb) | YouTube scraper |
+| Dashboard | [eda/app.py](eda/app.py) | 9-page Streamlit interactive app |
+| Main Analysis | [eda/main.ipynb](eda/main.ipynb) | 34-cell EDA notebook |
+| Dataset | [eda/dataset/syllable_features.csv](eda/dataset/syllable_features.csv) | ML-ready (4.000+ samples) |
+| A/B Testing | [ab_testing.ipynb](ab_testing.ipynb) | Statistical hypothesis tests |
 
 ---
 
-**Last Updated**: May 2026  
+**Last Updated**: June 2026  

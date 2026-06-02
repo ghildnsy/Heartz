@@ -1,10 +1,10 @@
-# 🎵 EDA Analysis - Syllable Audio Features
+# EDA Analysis - Syllable Audio Features
 
 Panduan lengkap untuk menjalankan analisis Exploratory Data Analysis (EDA) pada dataset audio suku kata Indonesia.
 
 ---
 
-## 📋 Daftar Isi
+## Daftar Isi
 1. [Persyaratan Sistem](#persyaratan-sistem)
 2. [Struktur Folder](#struktur-folder)
 3. [Instalasi & Setup](#instalasi--setup)
@@ -16,7 +16,7 @@ Panduan lengkap untuk menjalankan analisis Exploratory Data Analysis (EDA) pada 
 
 ---
 
-## 💻 Persyaratan Sistem
+## Persyaratan Sistem
 
 ### Software
 - **Python**: 3.8 atau lebih baru
@@ -30,7 +30,7 @@ Panduan lengkap untuk menjalankan analisis Exploratory Data Analysis (EDA) pada 
 
 ---
 
-## 📁 Struktur Folder
+## Struktur Folder
 
 File ini harus berada dalam struktur folder berikut:
 
@@ -61,11 +61,11 @@ data-science2/
 │           └── ...
 ```
 
-**⚠️ PENTING**: Folder `dataset/augmented_1/` harus sudah ada dengan file `.wav` di dalamnya sebelum menjalankan notebook!
+**PENTING**: Folder `dataset/augmented_1/` harus sudah ada dengan file `.wav` di dalamnya sebelum menjalankan notebook!
 
 ---
 
-## 🔧 Instalasi & Setup
+## Instalasi & Setup
 
 ### Step 1: Buka Terminal di Folder `eda`
 
@@ -133,7 +133,7 @@ choco install ffmpeg
 
 ---
 
-## 🚀 Menjalankan Notebook
+## Menjalankan Notebook
 
 ### Metode 1: Menggunakan Jupyter Notebook (Recommended untuk Pemula)
 
@@ -160,7 +160,7 @@ Atau buka Jupyter dan navigasi ke folder `eda`, lalu buka `main.ipynb`.
 4. **Jalankan cell demi cell** dengan menekan:
    - `Shift + Enter` = Jalankan cell saat ini
    - `Ctrl + Shift + Enter` = Jalankan semua cell
-   - Atau klik tombol ▶️ di sebelah kiri cell
+   - Atau klik tombol play/run di sebelah kiri cell
 
 ### Metode 3: Command Line (Untuk Automation)
 
@@ -171,11 +171,11 @@ jupyter nbconvert --to notebook --execute main.ipynb --output main_executed.ipyn
 
 ---
 
-## 📊 Menjalankan Dashboard Streamlit
+## Menjalankan Dashboard Streamlit
 
 Setelah menjalankan notebook dan `dataset/syllable_features.csv` berhasil dibuat, Anda dapat menjalankan **Interactive Dashboard Streamlit** untuk eksplorasi data yang lebih menarik.
 
-### 🚀 Langkah-Langkah Menjalankan Dashboard
+### Langkah-Langkah Menjalankan Dashboard
 
 #### **Step 1: Pastikan Dependencies Terinstall**
 
@@ -208,45 +208,45 @@ streamlit run app.py
 - Navigasi ke: `http://localhost:8501`
 - Dashboard akan terbuka otomatis (atau copy-paste URL)
 
-### 📑 Fitur-Fitur Dashboard
+### Fitur-Fitur Dashboard
 
 Dashboard Streamlit mencakup **9 halaman interaktif**:
 
 | No. | Halaman | Deskripsi |
 |-----|---------|-----------|
-| 1 | 🏠 Dashboard Utama | Overview dataset, key metrics, dan distribusi suku kata |
-| 2 | 📈 Analisis Fitur Utama | Distribusi fitur akustik utama dengan visualisasi interaktif |
-| 3 | 🎼 MFCC Analysis | Analisis mendalam Mel-Frequency Cepstral Coefficients |
-| 4 | 🔗 Korelasi Fitur | Heatmap korelasi antar fitur dengan pilihan metode |
-| 5 | 📉 Stabilitas Fitur | Feature stability ranking dan analisis robustness |
-| 6 | 🔤 Konsonan vs Vokal | Perbandingan karakteristik akustik konsonan & vokal |
-| 7 | 🗣️ Analisis Tipe Konsonan | Detail analisis untuk berbagai tipe konsonan (M, B, P) |
-| 8 | ⏱️ Analisis Durasi | Statistik dan distribusi durasi audio per suku kata |
-| 9 | 📊 Data Insights | Ringkasan komprehensif dengan recommendations untuk modeling |
+| 1 | Dashboard Utama | Overview dataset, key metrics, dan distribusi suku kata |
+| 2 | Analisis Fitur Utama | Distribusi fitur akustik utama dengan visualisasi interaktif |
+| 3 | MFCC Analysis | Analisis mendalam Mel-Frequency Cepstral Coefficients |
+| 4 | Korelasi Fitur | Heatmap korelasi antar fitur dengan pilihan metode |
+| 5 | Stabilitas Fitur | Feature stability ranking dan analisis robustness |
+| 6 | Konsonan vs Vokal | Perbandingan karakteristik akustik konsonan & vokal |
+| 7 | Analisis Tipe Konsonan | Detail analisis untuk berbagai tipe konsonan (M, B, P) |
+| 8 | Analisis Durasi | Statistik dan distribusi durasi audio per suku kata |
+| 9 | Data Insights | Ringkasan komprehensif dengan recommendations untuk modeling |
 
-### 🎨 Fitur Interaktif
+### Fitur Interaktif
 
-✅ **Sidebar Navigation** - Pilih halaman dengan mudah  
-✅ **Dynamic Filters** - Pilih fitur, metode analisis, dll  
-✅ **Real-time Charts** - Visualisasi yang responsif  
-✅ **Detailed Statistics** - Tabel lengkap dengan statistik  
-✅ **Export-ready Visuals** - Gambar berkualitas tinggi  
-✅ **Data Quality Report** - Laporan kualitas data otomatis  
+**Sidebar Navigation** - Pilih halaman dengan mudah  
+**Dynamic Filters** - Pilih fitur, metode analisis, dll  
+**Real-time Charts** - Visualisasi yang responsif  
+**Detailed Statistics** - Tabel lengkap dengan statistik  
+**Export-ready Visuals** - Gambar berkualitas tinggi  
+**Data Quality Report** - Laporan kualitas data otomatis  
 
-### 💡 Tips Penggunaan
+### Tips Penggunaan
 
 1. **Eksplorasi Interaktif**: Gunakan sidebar untuk navigasi antar halaman
 2. **Deep Dive**: Pilih fitur spesifik untuk analisis mendalam
 3. **Perbandingan**: Gunakan multi-select untuk membandingkan beberapa fitur
 4. **Screenshots**: Tekan `Ctrl+A` → `Ctrl+C` untuk screenshot halaman
 
-### 🛑 Menghentikan Dashboard
+### Menghentikan Dashboard
 
 Di terminal, tekan `Ctrl+C` untuk menghentikan server Streamlit.
 
 ---
 
-## 📖 Deskripsi Notebook
+## Deskripsi Notebook
 
 Notebook `main.ipynb` terdiri dari beberapa tahap utama:
 
@@ -258,7 +258,7 @@ Notebook `main.ipynb` terdiri dari beberapa tahap utama:
   - **Spektral**: Spectral Centroid, MFCC (13 koefisien)
   - **Pitch**: Fundamental Frequency (F0)
 - Menyimpan hasil ke `dataset/syllable_features.csv`
-- ⏱️ **Waktu**: 5-15 menit (tergantung jumlah file)
+- **Waktu**: 5-15 menit (tergantung jumlah file)
 
 ### **Tahap 2: EDA Setup** (Cell 6-9)
 - Import library yang diperlukan
@@ -298,9 +298,9 @@ Notebook `main.ipynb` terdiri dari beberapa tahap utama:
 
 ---
 
-## ⚙️ Troubleshooting
+## Troubleshooting
 
-### ❌ Error: "ModuleNotFoundError: No module named 'librosa'"
+### Error: "ModuleNotFoundError: No module named 'librosa'"
 
 **Solusi:**
 ```powershell
@@ -308,7 +308,7 @@ Notebook `main.ipynb` terdiri dari beberapa tahap utama:
 pip install librosa
 ```
 
-### ❌ Error: "Dataset directory tidak ditemukan"
+### Error: "Dataset directory tidak ditemukan"
 
 **Penyebab:** Folder `dataset/augmented_1/` tidak ada atau jalur salah
 
@@ -325,7 +325,7 @@ print(f"Dataset path: {os.path.join(os.getcwd(), 'dataset', 'augmented_1')}")
 print(f"Path exists: {os.path.exists(os.path.join(os.getcwd(), 'dataset', 'augmented_1'))}")
 ```
 
-### ❌ Error: "No such file or directory: 'dataset/syllable_features.csv'"
+### Error: "No such file or directory: 'dataset/syllable_features.csv'"
 
 **Penyebab:** Feature extraction belum dijalankan atau gagal
 
@@ -334,7 +334,7 @@ print(f"Path exists: {os.path.exists(os.path.join(os.getcwd(), 'dataset', 'augme
 2. Cek output di cell tersebut untuk melihat apakah ada error saat ekstraksi
 3. Verifikasi file `.wav` ada di folder `dataset/augmented_1/`
 
-### ❌ Error: "FFmpeg not found" atau Audio Processing Error
+### Error: "FFmpeg not found" atau Audio Processing Error
 
 **Penyebab:** FFmpeg tidak terinstall atau tidak di PATH
 
@@ -347,7 +347,7 @@ print(f"Path exists: {os.path.exists(os.path.join(os.getcwd(), 'dataset', 'augme
    ffmpeg -version
    ```
 
-### ❌ Memory Error atau Notebook Hang (Tidak Responsif)
+### Memory Error atau Notebook Hang (Tidak Responsif)
 
 **Penyebab:** Terlalu banyak file audio atau kurangnya RAM
 
@@ -362,7 +362,7 @@ print(f"Path exists: {os.path.exists(os.path.join(os.getcwd(), 'dataset', 'augme
    gc.collect()
    ```
 
-### ❌ Kernel Crash atau Stopped
+### Kernel Crash atau Stopped
 
 **Penyebab:** Memory insufficient atau infinite loop
 
@@ -371,7 +371,7 @@ print(f"Path exists: {os.path.exists(os.path.join(os.getcwd(), 'dataset', 'augme
 2. Jalankan cell dari awal
 3. Jika masalah persisten, kurangi data atau upgrade RAM
 
-### ⚠️ Warning: "PySoundFile Error" atau Audio File Error
+### Warning: "PySoundFile Error" atau Audio File Error
 
 **Penyebab:** File audio rusak atau format tidak didukung
 
@@ -383,7 +383,7 @@ print(f"Path exists: {os.path.exists(os.path.join(os.getcwd(), 'dataset', 'augme
 
 ---
 
-## 📊 Output & Hasil
+## Output & Hasil
 
 ### CSV Output
 - **Lokasi**: `dataset/syllable_features.csv`
@@ -406,29 +406,29 @@ Disimpan di `dataset/figs/`:
 
 ### Console Output
 Notebook akan menampilkan:
-- ✅ Progress ekstraksi fitur
-- 📊 Statistik dataset
-- 📈 Hasil analisis dan insights
-- 💡 Rekomendasi untuk next steps
+- Progress ekstraksi fitur
+- Statistik dataset
+- Hasil analisis dan insights
+- Rekomendasi untuk next steps
 
 ---
 
-## ✅ Checklist Sebelum Menjalankan
+## Checklist Sebelum Menjalankan
 
 Pastikan semua ini sudah selesai:
 
-- [ ] Python 3.8+ terinstall
-- [ ] Virtual environment dibuat dan diaktifkan
-- [ ] Semua dependencies terinstall (`pip install -r requirements.txt`)
-- [ ] Folder `dataset/augmented_1/` ada dengan file `.wav` di dalamnya
-- [ ] Berada di folder `eda` saat menjalankan notebook
-- [ ] FFmpeg terinstall (optional tapi recommended)
-- [ ] RAM tersedia minimal 8 GB
-- [ ] Folder `dataset/figs/` bisa dibuat otomatis
+- Python 3.8+ terinstall
+- Virtual environment dibuat dan diaktifkan
+- Semua dependencies terinstall (`pip install -r requirements.txt`)
+- Folder `dataset/augmented_1/` ada dengan file `.wav` di dalamnya
+- Berada di folder `eda` saat menjalankan notebook
+- FFmpeg terinstall (optional tapi recommended)
+- RAM tersedia minimal 8 GB
+- Folder `dataset/figs/` bisa dibuat otomatis
 
 ---
 
-## 🚨 Emergency: Notebook Tidak Bisa Dijalankan
+## Emergency: Notebook Tidak Bisa Dijalankan
 
 Jika masih ada masalah setelah mengikuti semua langkah di atas:
 
@@ -461,7 +461,7 @@ python -c "import librosa, pandas, numpy, matplotlib; print('All imports success
 
 ---
 
-## 📞 Bantuan Lebih Lanjut
+## Bantuan Lebih Lanjut
 
 Jika masih mengalami masalah:
 
@@ -487,7 +487,7 @@ Jika masih mengalami masalah:
 
 ---
 
-## 📝 Notes
+## Notes
 
 - Feature extraction bisa memakan waktu lama (5-15 menit) tergantung jumlah file
 - Setelah feature extraction pertama kali, result di-simpan ke CSV
@@ -496,4 +496,4 @@ Jika masih mengalami masalah:
 
 ---
 
-**Last Updated**: May 19, 2026 
+**Last Updated**: June 2026 
