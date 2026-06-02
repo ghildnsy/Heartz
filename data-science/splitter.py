@@ -1,7 +1,7 @@
 """
-============================================================
+=======================================
 Heartz Project — STEP 2: Audio Splitter
-============================================================
+=======================================
 Memotong file audio panjang dari YouTube menjadi clip-clip
 pendek per suku kata berdasarkan deteksi silence.
 
@@ -10,14 +10,10 @@ File dari dataset/downloads/ → dipotong → dataset/raw/{kelas}/
 Cara Pakai:
 -----------
 1. Pastikan sudah ada file audio di dataset/downloads/
-
-2. Jalankan:
-   python splitter.py
-
+2. Jalankan: python splitter.py
 3. Atau dari notebook:
    from splitter import split_audio_file, split_and_preview
    split_audio_file("dataset/downloads/video.wav", "dataset/raw", "Ba")
-============================================================
 """
 
 import numpy as np
@@ -255,9 +251,9 @@ def split_audio_with_labels(input_path, output_dir, labels,
                                  "dataset/raw", labels, top_db=30)
     
     Maka:
-        - Region 1 (pertama) → A
-        - Region 2 (kedua) → I
-        - Region 3 (ketiga) → U
+        - Region 1 (pertama) -> A
+        - Region 2 (kedua) -> I
+        - Region 3 (ketiga) -> U
         - ... dst
 
     Args:
@@ -364,10 +360,10 @@ def split_audio_selective(input_path, output_dir, region_labels_map,
     
     Contoh penggunaan:
         region_labels_map = {
-            0: "A",      # Ambil region 0 → label "A"
-            1: "I",      # Ambil region 1 → label "I"
-            3: "U",      # Ambil region 3 → label "U" (skip region 2)
-            5: "Ba",     # Ambil region 5 → label "Ba"
+            0: "A",      # Ambil region 0 -> label "A"
+            1: "I",      # Ambil region 1 -> label "I"
+            3: "U",      # Ambil region 3 -> label "U" (skip region 2)
+            5: "Ba",     # Ambil region 5 -> label "Ba"
         }
         split_audio_selective("dataset/downloads/video.wav", 
                                "dataset/raw", region_labels_map, top_db=30)
@@ -409,7 +405,7 @@ def split_audio_selective(input_path, output_dir, region_labels_map,
     margin_samples = int(margin_ms / 1000 * sr)
     results = {}
 
-    print(f"\n✂️  Selective Split: {input_path.name}")
+    print(f"\n Selective Split: {input_path.name}")
     print(f"   Threshold: top_db={top_db}")
     print(f"   Total region terdeteksi: {len(regions)}")
     print(f"   Region yang akan diambil: {len(region_labels_map)}")
@@ -473,9 +469,9 @@ def interactive_split(input_path):
         print(f"   top_db={db}: {len(regions)} region terdeteksi")
 
 
-# ============================================
+# ====
 # MAIN
-# ============================================
+# ====
 if __name__ == "__main__":
     ensure_dirs()
 

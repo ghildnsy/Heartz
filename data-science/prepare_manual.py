@@ -1,13 +1,12 @@
 """
-============================================================
+========================================
 Heartz Project — Manual Data Preparation
-============================================================
+========================================
 Konversi file video/audio manual menjadi format WAV standar
 untuk pipeline (16kHz, Mono).
 
 Folder Input  : dataset/manual_downloads/
 Folder Output : dataset/downloads/
-============================================================
 """
 
 import subprocess
