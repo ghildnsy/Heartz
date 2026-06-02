@@ -1,0 +1,897 @@
+{
+  "info": {
+    "_postman_id": "15941741-50f6-4399-9f51-6caa90b48e9e",
+    "name": "Heartz - Full Production API Documentation (v2)",
+    "description": "Dokumentasi Resmi dan Utuh untuk Project Heartz (Back-End Express 5).\n\n📌 **PANDUAN UTAMA INTEGRASI UNTUK TIM FRONT-END (FE):**\n\n1. **SISTEM OTENTIKASI KUKU (HTTP-ONLY COOKIE):**\n    \n    - `POST /api/auth/login` akan otomatis menanamkan `refreshToken` ke dalam kuki browser/perangkat Anda. Anda **TIDAK PERLU** menyimpan refresh token di LocalStorage.\n        \n    - Untuk endpoint `POST /api/auth/refresh` dan `POST /api/auth/logout`, tim FE **WAJIB** mengaktifkan opsi konfigurasi request: `withCredentials: true` (Axios) atau `credentials: 'include'` (Fetch API) agar cookie otomatis terkirim.\n        \n2. **OTENTIKASI ENDPOINT PROTECTED:**\n    \n    - Semua endpoint bertanda _(Protected)_ membutuhkan header -> `Authorization: Bearer {{token}}`.\n        \n    - Gunakan mekanisme **Axios Interceptor** untuk menangkap error `401 ACCESS_TOKEN_EXPIRED`. Jika terdeteksi, panggil `POST /api/auth/refresh` di latar belakang untuk mendapatkan `accessToken` baru, lalu ulangi request yang gagal.\n        \n3. **PENGIRIMAN AUDIO BERKAS (MULTIPART FORMDATA):**\n    \n    - `POST /api/predict` menerima data form dengan field file bernama `audio` (Format WAV, PCM 16-bit mono 16kHz) dan field text bernama `targetSyllableId`.\n\n4. **OPTIMASI PRE-WARMING & MULTI-RANGE SUMMARY:**\n    \n    - Panggil `GET /api/predict/warmup` secara senyap saat user masuk ke menu pemilihan materi untuk memicu pemanasan awal server ML.\n    \n    - Endpoint `GET /api/history/summary` mendukung query parameter `?range=7d`, `?range=30d`, atau `?range=all` untuk menyajikan data statistik adaptif.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "50952099",
+    "_collection_link": "https://go.postman.co/collection/50952099-15941741-50f6-4399-9f51-6caa90b48e9e?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "item": [
+        {
+          "name": "GET / (Health Check)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                ""
+              ]
+            },
+            "description": "Memastikan server backend Heartz dalam kondisi aktif dan beroperasi normal."
+          },
+          "response": [
+            {
+              "name": "200 OK - Server Up",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    ""
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": \"success\",\n  \"message\": \"Server Heartz API beroperasi dengan baik\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "POST /api/auth/register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Muhammad Isra Al Fattah\",\n  \"email\": \"isra@email.com\",\n  \"password\": \"rahasia123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            },
+            "description": "Mendaftarkan pengguna baru ke database AWS RDS. Kata sandi akan otomatis di-hash menggunakan algoritma Bcrypt."
+          },
+          "response": [
+            {
+              "name": "201 Created - Registrasi Sukses",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Muhammad Isra Al Fattah\",\n  \"email\": \"isra@email.com\",\n  \"password\": \"rahasia123\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/register",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": \"success\",\n  \"statusCode\": 201,\n  \"message\": \"Registrasi berhasil.\",\n  \"data\": {\n    \"userId\": \"cmppdln340000uw7k56nwvc8m\",\n    \"name\": \"Muhammad Isra Al Fattah\",\n    \"email\": \"isra@email.com\"\n  }\n}"
+            },
+            {
+              "name": "400 Bad Request - Email Sudah Terdaftar",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Muhammad Isra Al Fattah\",\n  \"email\": \"isra@email.com\",\n  \"password\": \"rahasia123\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/register",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": \"fail\",\n  \"statusCode\": 400,\n  \"message\": \"Email sudah digunakan oleh akun lain. Silakan gunakan email yang berbeda.\",\n  \"code\": \"EMAIL_ALREADY_USED\",\n  \"errors\": []\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST /api/auth/login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"isra@email.com\",\n  \"password\": \"rahasia123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Memvalidasi kredensial pengguna. Mengembalikan accessToken berdurasi 15 menit dan otomatis menetapkan HTTP-Only Cookie bernama 'refreshToken' (7 hari) di browser/perangkat klien."
+          },
+          "response": [
+            {
+              "name": "200 OK - Login Sukses",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"isra@email.com\",\n  \"password\": \"rahasia123\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Set-Cookie",
+                  "value": "refreshToken=eyJhbGciOiJIUzI1Ni...; Max-Age=604800; Path=/; HttpOnly; SameSite=Strict"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": \"success\",\n  \"statusCode\": 200,\n  \"message\": \"Login berhasil.\",\n  \"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbXBwZGxuMzQwMDAwdXc3azU2bnd2YzhtIiwiZW1haWwiOiJpc3JhQGVtYWlsLmNvbSJ9...\",\n  \"data\": {\n    \"userId\": \"cmppdln340000uw7k56nwvc8m\",\n    \"name\": \"Muhammad Isra Al Fattah\",\n    \"email\": \"isra@email.com\"\n  }\n}"
+            },
+            {
+              "name": "401 Unauthorized - Kredensial Salah",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"isra@email.com\",\n  \"password\": \"rahasia123\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": \"fail\",\n  \"statusCode\": 401,\n  \"message\": \"Email atau kata sandi yang Anda masukkan salah.\",\n  \"code\": \"INVALID_CREDENTIALS\",\n  \"errors\": []\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST /api/auth/refresh",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/refresh",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "refresh"
+              ]
+            },
+            "description": "ENDPOINT ROTASI SESI (RTR). Membaca kuki 'refreshToken', menghapus sesi lama di AWS RDS, kemudian memproduksi token baru (accessToken di body JSON, dan refreshToken baru diperbarui di HTTP-Only Cookie)."
+          },
+          "response": [
+            {
+              "name": "200 OK - Token Berhasil Dirotasi",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/refresh",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "refresh"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Set-Cookie",
+                  "value": "refreshToken=eyJhbGciOiJIUzI1TklfTkVXX1RPS0VOLC...; Max-Age=604800; Path=/; HttpOnly; SameSite=Strict"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": \"success\",\n  \"statusCode\": 200,\n  \"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.NEW_ACCESS_TOKEN_HERE...\",\n  \"data\": {\n    \"userId\": \"cmppdln340000uw7k56nwvc8m\",\n    \"name\": \"Muhammad Isra Al Fattah\",\n    \"email\": \"isra@email.com\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST /api/auth/logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "logout"
+              ]
+            },
+            "description": "Menghapus sesi token aktif dari database AWS RDS secara permanen, lalu menghapus kuki 'refreshToken' yang tersimpan di sisi klien."
+          },
+          "response": [
+            {
+              "name": "200 OK - Logout Sukses",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/logout",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "logout"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": \"success\",\n  \"statusCode\": 200,\n  \"message\": \"Berhasil keluar dari sistem (Logout sukses).\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Profile (Protected)",
+      "item": [
+        {
+          "name": "GET /api/profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/profile",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "profile"
+              ]
+            },
+            "description": "Mengambil data profil pengguna log masuk saat ini. Menyertakan totalSessions hasil agregasi riyal dari database."
+          },
+          "response": [
+            {
+              "name": "200 OK - Data Profil Ditemukan",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/profile",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profile"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": \"success\",\n  \"statusCode\": 200,\n  \"data\": {\n    \"userId\": \"cmppdln340000uw7k56nwvc8m\",\n    \"name\": \"Muhammad Isra Al Fattah\",\n    \"email\": \"isra@email.com\",\n    \"joinedAt\": \"2026-05-28T10:54:27.619Z\",\n    \"totalSessions\": 3\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "PUT /api/profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Muhammad Isra Updated\",\n  \"email\": \"isra_new@email.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/profile",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "profile"
+              ]
+            },
+            "description": "Memperbarui nama atau email pengguna log masuk pada database."
+          },
+          "response": [
+            {
+              "name": "200 OK - Profil Berhasil Diperbarui",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Muhammad Isra Updated\",\n  \"email\": \"isra_new@email.com\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/profile",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "profile"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": \"success\",\n  \"statusCode\": 200,\n  \"message\": \"Profil berhasil diperbarui.\",\n  \"data\": {\n    \"userId\": \"cmppdln340000uw7k56nwvc8m\",\n    \"name\": \"Muhammad Isra Updated\",\n    \"email\": \"isra_new@email.com\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Predict (Protected)",
+      "item": [
+        {
+          "name": "GET /api/predict/warmup",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/predict/warmup",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "predict",
+                "warmup"
+              ]
+            },
+            "description": "ENDPOINT PRE-WARMING (Pemanasan Server AI). Dipanggil senyap oleh Front-End ketika pengguna mengklik kartu materi/suku kata untuk membangunkan server Flask/FastAPI ML dari kondisi pingsan (Cold Start) di latar belakang."
+          },
+          "response": [
+            {
+              "name": "200 OK - Pemanasan Berhasil Dipicu",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/predict/warmup",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "predict",
+                    "warmup"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": \"success\",\n  \"statusCode\": 200,\n  \"message\": \"Proses pemanasan server AI berhasil dipicu di latar belakang.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST /api/predict (Upload Audio)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "audio",
+                  "type": "file",
+                  "description": "Unggah berkas WAV latihan pasien (PCM 16-bit Mono, Frekuensi 16kHz).",
+                  "value": null
+                },
+                {
+                  "key": "targetSyllableId",
+                  "value": "syl_vokal_ma_001",
+                  "type": "text",
+                  "description": "ID unik dari master suku kata target pelafalan di database."
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/predict",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "predict"
+              ]
+            },
+            "description": "Endpoint Inti Aplikasi Speech Therapy. Mengunggah file ke AWS S3, melempar data biner ke Flask ML API untuk klasifikasi audio, mencatat data sesi latihan secara transaksional, dan menghasilkan teks afirmasi pintar."
+          },
+          "response": [
+            {
+              "name": "200 OK - Prediksi Berhasil Diproses",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "audio",
+                      "type": "file"
+                    },
+                    {
+                      "key": "targetSyllableId",
+                      "value": "syl_vokal_ma_001",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/predict",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "predict"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": \"success\",\n  \"statusCode\": 200,\n  \"message\": \"Audio berhasil diproses oleh model AI.\",\n  \"data\": {\n    \"sessionId\": \"prc_sess_9912\",\n    \"date\": \"2026-05-28T07:44:12.110Z\",\n    \"targetSyllable\": \"ma\",\n    \"predictedSyllable\": \"ma\",\n    \"isCorrect\": true,\n    \"accuracyScore\": 0.9375522136688232,\n    \"affirmation\": \"Luar biasa, akurasi 93,8% untuk pelafalan 'ma' itu keren sekali, terus semangat berlatih ya!\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "History (Protected)",
+      "item": [
+        {
+          "name": "GET /api/history (List)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/history",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "history"
+              ]
+            },
+            "description": "Mengambil seluruh daftar riwayat sesi latihan bicara milik pengguna aktif secara urutan waktu terbalik (terbaru dahulu)."
+          },
+          "response": [
+            {
+              "name": "200 OK - Daftar Riwayat Ditemukan",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/history",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "history"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": \"success\",\n  \"statusCode\": 200,\n  \"results\": 2,\n  \"data\": [\n    {\n      \"sessionId\": \"prc_sess_9912\",\n      \"date\": \"2026-05-28T07:44:12.110Z\",\n      \"targetSyllable\": \"ma\",\n      \"isCorrect\": true,\n      \"score\": 0.9375522136688232\n    },\n    {\n      \"sessionId\": \"prc_sess_9801\",\n      \"date\": \"2026-05-27T10:12:00.000Z\",\n      \"targetSyllable\": \"ba\",\n      \"isCorrect\": false,\n      \"score\": 0.6120194435119629\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET /api/history/summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/history/summary?range=30d",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "history",
+                "summary"
+              ],
+              "query": [
+                {
+                  "key": "range",
+                  "value": "30d",
+                  "description": "Variasi nilai: '7d' (7 hari terakhir), '30d' (30 hari terakhir), atau 'all' (Seluruh Waktu latihan)."
+                }
+              ]
+            },
+            "description": "Mengambil ringkasan data performa statistik adaptif menggunakan integrasi Gemini API berlandaskan model caching database pintar AWS RDS. Mendukung query string `?range=`."
+          },
+          "response": [
+            {
+              "name": "200 OK - Ringkasan Berhasil Ditemukan",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/history/summary?range=30d",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "history",
+                    "summary"
+                  ],
+                  "query": [
+                    {
+                      "key": "range",
+                      "value": "30d"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": \"success\",\n  \"statusCode\": 200,\n  \"data\": {\n    \"timeRange\": {\n      \"startDate\": \"2026-05-01T18:26:26.000Z\",\n      \"endDate\": \"2026-05-31T18:26:26.000Z\"\n    },\n    \"stats\": {\n      \"totalPracticeCount\": 12,\n      \"totalCorrect\": 9,\n      \"totalIncorrect\": 3,\n      \"overallAccuracy\": 0.85\n    },\n    \"geminiWeeklyReport\": \"Dalam 30 hari terakhir, Anda menunjukkan kemajuan luar biasa dengan merampungkan 12 sesi latihan. Akurasi artikulasi rata-rata Anda menyentuh angka 85.0%, dengan dominasi pelafalan sukses. Pertahankan konsistensi ini untuk menguatkan kontrol motorik bicara Anda!\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET /api/history/:sessionId (Detail)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/history/prc_sess_9912",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "history",
+                "prc_sess_9912"
+              ]
+            },
+            "description": "Mengambil ulasan informasi detail dari satu sesi latihan tunggal, lengkap dengan join tautan URL berkas rekaman suara riyal dari AWS S3."
+          },
+          "response": [
+            {
+              "name": "200 OK - Detail Sesi Ditemukan",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/history/prc_sess_9912",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "history",
+                    "prc_sess_9912"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": \"success\",\n  \"statusCode\": 200,\n  \"data\": {\n    \"sessionId\": \"prc_sess_9912\",\n    \"date\": \"2026-05-28T07:44:12.110Z\",\n    \"targetSyllable\": \"ma\",\n    \"predictedSyllable\": \"ma\",\n    \"isCorrect\": true,\n    \"score\": 0.9375522136688232,\n    \"audioUrl\": \"https://heartz-audio-bucket.s3.ap-southeast-3.amazonaws.com/audio-practices/cmppdln340000uw7k56nwvc8m/1716888842-ab2c3e.wav\",\n    \"affirmation\": \"Luar biasa, akurasi 93,8% untuk pelafalan 'ma' itu keren sekali, terus semangat berlatih ya!\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "PASTE_ACCESS_TOKEN_HASIL_LOGIN_DISINI",
+      "type": "string"
+    }
+  ]
+}
