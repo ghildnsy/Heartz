@@ -1,15 +1,19 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useSearchParams } from 'react-router';
-import { HiPlay } from 'react-icons/hi2';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router';
+import { Play } from 'lucide-react';
 import syllables from '../data/syllables';
 import { validateSyllables } from '../utils/validation';
 import useFilter from '../hooks/useFilter';
 import FilterTabs from '../components/FilterTabs';
 import SoundCard from '../components/SoundCard';
+import { useAppContext } from '../hooks/useAppContext';
+import SyllableLabel from '../components/SyllableLabel';
 
 function PracticePage() {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const initialFilter = searchParams.get('filter') || 'all';
+  const { setSyllable } = useAppContext();
 
   const { filter, setFilter, filteredData } = useFilter(syllables, initialFilter);
   const [selectedId, setSelectedId] = useState(null);
@@ -29,14 +33,11 @@ function PracticePage() {
     }
   }, [filter, setSearchParams]);
 
-  useEffect(() => {
-    if (selectedId && !filteredData.find((s) => s.id === selectedId)) {
-      setSelectedId(null);
-    }
-  }, [filteredData, selectedId]);
-
   const handleFilterChange = useCallback(
-    (newFilter) => setFilter(newFilter),
+    (newFilter) => {
+      setSelectedId(null);
+      setFilter(newFilter);
+    },
     [setFilter]
   );
 
@@ -45,38 +46,40 @@ function PracticePage() {
   }, []);
 
   const selectedItem = useMemo(
-    () => syllables.find((s) => s.id === selectedId),
+    () => syllables.find((item) => item.id === selectedId),
     [selectedId]
   );
 
+  const startPractice = useCallback(() => {
+    if (!selectedItem) return;
+
+    setSyllable(selectedItem.label);
+    navigate(`/practice/${selectedItem.label.toLowerCase()}`);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [navigate, selectedItem, setSyllable]);
+
   return (
-    <div
-      className="mx-auto max-w-[960px] px-6 py-8 pb-24 transition-colors dark:bg-slate-900 max-[700px]:px-4 max-[700px]:py-6"
-      id="practice-page"
-    >
+    <div className="mx-auto w-full max-w-[1280px] px-5 py-7 pb-28 sm:px-6 md:px-10 md:py-8" id="practice-page">
       <header className="mb-6">
-        <h1 className="mb-1 text-[1.75rem] font-extrabold tracking-[-0.02em] text-slate-900 transition-colors dark:text-slate-50 max-[440px]:text-[1.35rem]">
+        <h1 className="mb-1 text-[28px] font-extrabold text-hz-ink">
           Choose a sound to practice
         </h1>
-        <p className="text-[0.95rem] font-medium text-slate-400 transition-colors dark:text-slate-300 max-[440px]:text-[0.85rem]">
-          {filteredData.length} syllables — Tap any card to start
+        <p className="text-sm font-semibold text-hz-sub">
+          {filteredData.length} syllables - tap a card to prepare your visual practice.
         </p>
       </header>
 
       <FilterTabs activeFilter={filter} onFilterChange={handleFilterChange} />
 
-      <div
-        className="grid grid-cols-5 gap-4 max-[900px]:grid-cols-4 max-[700px]:grid-cols-3 max-[700px]:gap-3 max-[440px]:grid-cols-2 max-[440px]:gap-2.5"
-        id="sound-grid"
-      >
-        {filteredData.map((syllable) => (
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 xl:grid-cols-5" id="sound-grid">
+        {filteredData.map((item) => (
           <SoundCard
-            key={syllable.id}
-            id={syllable.id}
-            label={syllable.label}
-            type={syllable.type}
-            group={syllable.group}
-            isSelected={syllable.id === selectedId}
+            key={item.id}
+            id={item.id}
+            label={item.label}
+            type={item.type}
+            group={item.group}
+            isSelected={item.id === selectedId}
             onSelect={handleSelect}
           />
         ))}
@@ -84,24 +87,18 @@ function PracticePage() {
 
       {selectedItem && (
         <div
-          className="fixed bottom-6 right-6 z-50 [animation:cta-slide-up_0.3s_cubic-bezier(0.4,0,0.2,1)]"
+          className="fixed inset-x-5 bottom-5 z-50 flex justify-end [animation:cta-slide-up_0.3s_cubic-bezier(0.4,0,0.2,1)] md:inset-x-auto md:bottom-6 md:right-6"
           id="practice-cta"
         >
           <button
             type="button"
-            className="inline-flex items-center gap-2 rounded-[14px] bg-gradient-to-br from-primary-400 to-primary-300 px-7 py-3.5 text-[0.95rem] font-semibold text-white shadow-[0_6px_24px_rgba(108,140,255,0.4)] transition-transform hover:-translate-y-0.5 hover:shadow-[0_10px_32px_rgba(108,140,255,0.5)] active:translate-y-0"
+            onClick={startPractice}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-hz-primary px-7 py-3.5 text-sm font-bold text-white shadow-hz-primary transition-transform hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-hz-primary active:translate-y-0 sm:w-auto"
             id="btn-start-practice"
           >
-            <HiPlay className="text-[1.2rem]" />
-            Start with &lsquo;{selectedItem.label}&rsquo;
+            <Play size={18} fill="currentColor" aria-hidden="true" />
+            Start with &lsquo;<SyllableLabel>{selectedItem.label}</SyllableLabel>&rsquo;
           </button>
-
-          <style>{`
-            @keyframes cta-slide-up {
-              from { opacity: 0; transform: translateY(16px); }
-              to { opacity: 1; transform: translateY(0); }
-            }
-          `}</style>
         </div>
       )}
     </div>

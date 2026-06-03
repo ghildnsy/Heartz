@@ -1,0 +1,35 @@
+:root {
+  --hz-bg: #F4F9FB;
+  --hz-bg-soft: #EEF4F7;
+  --hz-ink: #0E2A3A;
+  --hz-sub: #4E6B7A;
+  --hz-primary: #2E8BC0;
+  --hz-primary-soft: #D6ECF6;
+  --hz-accent: #5FBFA3;
+  --hz-accent-soft: #D9F1E7;
+  --hz-good: #34C38F;
+  --hz-warn: #F5C16C;
+  --hz-bad: #E86A6A;
+  --hz-card: #FFFFFF;
+  --hz-line: #E3ECF0;
+  --hz-track: #F0F3F5;
+  --hz-overlay: rgba(14, 42, 58, 0.55);
+}
+
+.dark {
+  --hz-bg: #0B1820;
+  --hz-bg-soft: #0F2230;
+  --hz-ink: #EAF2F6;
+  --hz-sub: #9CB4C0;
+  --hz-primary: #5BB4E0;
+  --hz-primary-soft: #173646;
+  --hz-accent: #6FD6B7;
+  --hz-accent-soft: #143028;
+  --hz-good: #4ED6A1;
+  --hz-warn: #F0C779;
+  --hz-bad: #F08585;
+  --hz-card: #122636;
+  --hz-line: #1E3849;
+  --hz-track: #1A2F3D;
+  --hz-overlay: rgba(0, 0, 0, 0.65);
+}

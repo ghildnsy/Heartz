@@ -17,11 +17,12 @@ function FilterTabs({ activeFilter, onFilterChange }) {
             type="button"
             onClick={() => onFilterChange(tab.key)}
             className={[
-              'cursor-pointer rounded-full border-[1.5px] px-6 py-2 text-[0.88rem] font-medium transition-colors',
+              'cursor-pointer rounded-full border px-6 py-2 text-sm font-semibold transition-colors',
               'font-sans',
+              'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-hz-primary',
               isActive
-                ? 'border-transparent bg-gradient-to-br from-primary-400 to-primary-300 text-white shadow-[0_2px_10px_rgba(108,140,255,0.3)] dark:shadow-[0_2px_10px_rgba(108,140,255,0.5)]'
-                : 'border-slate-200 bg-white text-slate-500 hover:border-slate-400 hover:bg-slate-50 hover:text-slate-700 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-300 dark:hover:border-slate-500 dark:hover:bg-slate-700/60 dark:hover:text-slate-50',
+                ? 'border-hz-primary bg-hz-primarySoft text-hz-primary'
+                : 'border-hz-line bg-hz-card text-hz-sub hover:border-hz-primary hover:bg-hz-bg-soft hover:text-hz-ink',
             ].join(' ')}
           >
             {tab.label}
