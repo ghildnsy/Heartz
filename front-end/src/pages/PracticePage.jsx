@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { Play } from 'lucide-react';
 import syllables from '../data/syllables';
@@ -7,7 +7,6 @@ import useFilter from '../hooks/useFilter';
 import FilterTabs from '../components/FilterTabs';
 import SoundCard from '../components/SoundCard';
 import { useAppContext } from '../hooks/useAppContext';
-import { predictApi } from '../services/api';
 import SyllableLabel from '../components/SyllableLabel';
 
 function PracticePage() {
@@ -18,7 +17,6 @@ function PracticePage() {
 
   const { filter, setFilter, filteredData } = useFilter(syllables, initialFilter);
   const [selectedId, setSelectedId] = useState(null);
-  const warmedTargetsRef = useRef(new Set());
 
   useEffect(() => {
     const { error } = validateSyllables(syllables);
@@ -45,16 +43,6 @@ function PracticePage() {
 
   const handleSelect = useCallback((id) => {
     setSelectedId((prev) => (prev === id ? null : id));
-
-    const selected = syllables.find((item) => item.id === id);
-    if (!selected?.targetLabel || warmedTargetsRef.current.has(selected.targetLabel)) {
-      return;
-    }
-
-    warmedTargetsRef.current.add(selected.targetLabel);
-    void predictApi.warmup().catch(() => {
-      warmedTargetsRef.current.delete(selected.targetLabel);
-    });
   }, []);
 
   const selectedItem = useMemo(

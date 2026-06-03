@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import {
   AlertCircle,
@@ -18,7 +18,7 @@ import SyllableLabel from '../components/SyllableLabel';
 import { useAppContext } from '../hooks/useAppContext';
 import { useAudioRecorder } from '../hooks/useAudioRecorder';
 import { usePredict } from '../hooks/usePredict';
-import { predictApi } from '../services/api';
+import { getPredictWarmupIntervalMs, requestPredictWarmup } from '../services/predictWarmup';
 
 const bars = [28, 52, 36, 68, 44, 76, 34, 58, 42, 64, 30, 48];
 
@@ -60,6 +60,7 @@ function PracticeSessionPage() {
   const navigate = useNavigate();
   const { syllable: routeSyllable = '' } = useParams();
   const { syllable, setSyllable, setLastResult } = useAppContext();
+  const warmupIntervalRef = useRef(null);
   const [mouthAnimationState, setMouthAnimationState] = useState({
     target: '',
     enabled: false,
@@ -103,7 +104,28 @@ function PracticeSessionPage() {
 
   useEffect(() => {
     if (!targetLabel) return;
-    void predictApi.warmup().catch(() => {});
+    void requestPredictWarmup().catch(() => {});
+  }, [targetLabel]);
+
+  useEffect(() => {
+    if (!targetLabel) return undefined;
+
+    const warmupIfVisible = () => {
+      if (document.visibilityState !== 'visible') return;
+      void requestPredictWarmup().catch(() => {});
+    };
+
+    warmupIfVisible();
+    warmupIntervalRef.current = window.setInterval(
+      warmupIfVisible,
+      getPredictWarmupIntervalMs()
+    );
+    document.addEventListener('visibilitychange', warmupIfVisible);
+
+    return () => {
+      window.clearInterval(warmupIntervalRef.current);
+      document.removeEventListener('visibilitychange', warmupIfVisible);
+    };
   }, [targetLabel]);
 
   useEffect(() => {
@@ -142,6 +164,7 @@ function PracticeSessionPage() {
 
     resetPredict();
     resetAudio();
+    void requestPredictWarmup().catch(() => {});
     startRecording();
   };
 

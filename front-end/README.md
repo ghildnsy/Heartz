@@ -21,7 +21,7 @@ Front-end sudah memenuhi kebutuhan utama aplikasi web:
 
 Mockup high fidelity dapat dilihat di Figma: [High Fidelity Mockup for Heartz](https://www.figma.com/make/oDz05507VB5IRgjYUW4kFr/High-Fidelity-Mockup-for-Heartz?code-node-id=0-9&p=f&t=A3bwrrIxaQXObjVo-0&fullscreen=1).
 
-Catatan: folder backend lokal dan machine-learning lokal tidak menjadi runtime utama front-end production. Front-end ini menggunakan API cloud melalui environment variable `VITE_BACKEND_CLOUD_API_URL`.
+Catatan: folder backend lokal dan machine-learning lokal tidak menjadi runtime utama front-end production. Front-end ini membaca base URL API dari environment variable `VITE_API_BASE_URL`, bukan dari URL backend yang ditulis langsung di source code.
 
 ## Fitur Utama
 
@@ -149,24 +149,23 @@ Route yang dilindungi hanya dapat diakses setelah pengguna login. Jika session t
 
 ## Environment Variable
 
-Buat file `.env` di folder `front-end`:
+Buat file `.env.local` di folder `front-end` dari template `.env.example`:
 
 ```env
-VITE_BACKEND_CLOUD_API_URL=https://your-backend-api-url.example.com
-VITE_BACKEND_LOCAL_API_URL=http://localhost:3000
+VITE_API_BASE_URL=https://your-backend-api-url.example.com
 VITE_USE_API_PROXY=false
 ```
 
 Keterangan:
 
-- `VITE_BACKEND_CLOUD_API_URL`: URL API cloud yang digunakan untuk production atau deployment Vercel.
-- `VITE_BACKEND_LOCAL_API_URL`: URL backend lokal jika ingin testing lokal.
+- `VITE_API_BASE_URL`: base URL API untuk environment yang sedang dipakai, misalnya backend lokal saat development atau backend production saat deploy.
 - `VITE_USE_API_PROXY`: gunakan `true` hanya jika ingin memakai proxy Vite saat development lokal.
+- `.env`, `.env.local`, dan file env nyata lain tidak boleh di-commit. Commit hanya `.env.example` sebagai template.
 
 Untuk deployment Vercel, environment variable utama yang wajib diisi adalah:
 
 ```env
-VITE_BACKEND_CLOUD_API_URL=https://your-backend-api-url.example.com
+VITE_API_BASE_URL=https://your-backend-api-url.example.com
 ```
 
 ## Cara Menjalankan Lokal
@@ -216,7 +215,7 @@ Konfigurasi Vercel yang disarankan:
 Tambahkan environment variable di dashboard Vercel:
 
 ```env
-VITE_BACKEND_CLOUD_API_URL=https://your-backend-api-url.example.com
+VITE_API_BASE_URL=https://your-backend-api-url.example.com
 ```
 
 Karena aplikasi menggunakan React Router, deployment SPA perlu rewrite semua route ke `index.html`. Jika belum ada, tambahkan file `vercel.json` di folder `front-end`:
@@ -261,5 +260,5 @@ Production URL: -
 - Aplikasi ini adalah front-end production-ready untuk Heartz.
 - Backend lokal dan folder machine-learning lokal tidak perlu dijalankan untuk menilai front-end ini.
 - Fitur utama dapat dipahami dari alur: pilih target latihan, rekam audio, kirim ke API prediksi, tampilkan feedback, lalu lihat progres.
-- Jika ingin menguji penuh sampai prediksi AI, pastikan `VITE_BACKEND_CLOUD_API_URL` mengarah ke API cloud yang aktif dan mendukung CORS dari domain Vercel.
+- Jika ingin menguji penuh sampai prediksi AI, pastikan `VITE_API_BASE_URL` mengarah ke API yang aktif dan mendukung CORS dari domain Vercel.
 - Jika hanya ingin memeriksa UI dan build, jalankan `npm install`, `npm run build`, dan `npm run preview`.

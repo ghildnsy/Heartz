@@ -1,9 +1,6 @@
 import axios from 'axios';
 
-const rawBaseUrl =
-  import.meta.env.VITE_BACKEND_CLOUD_API_URL ||
-  import.meta.env.VITE_BACKEND_LOCAL_API_URL ||
-  '';
+const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || '';
 
 const USE_DEV_PROXY = import.meta.env.DEV && import.meta.env.VITE_USE_API_PROXY === 'true';
 const BASE_URL = USE_DEV_PROXY ? '' : rawBaseUrl.replace(/\/+$/, '');
