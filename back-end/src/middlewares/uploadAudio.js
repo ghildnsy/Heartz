@@ -1,21 +1,24 @@
 import multer from 'multer';
 import AppError from '../utils/AppError.js';
 
+// Konfigurasi spesifikasi audio WAV dari spesifikasi teknis
 const WAV_SAMPLE_RATE = 16000;
 const WAV_CHANNELS = 1;
 const WAV_BITS_PER_SAMPLE = 16;
 
-const TARGET_SECONDS = 1.0;
-const MAX_SECONDS = 2.0;
+// Menyesuaikan dengan batas maksimal dari tim ML (5 detik)
+const MAX_SECONDS = 5.0;
 
-const TARGET_SAMPLES = WAV_SAMPLE_RATE * TARGET_SECONDS; // 16000
-const MAX_SAMPLES = WAV_SAMPLE_RATE * MAX_SECONDS; // 32000
-
-// WAV PCM 16-bit mono 16kHz 2 detik ≈ 64KB data + header; kasih toleransi.
-const MAX_FILE_SIZE_BYTES = 250 * 1024; // 250KB
+// Estimasi ukuran berkas maksimal untuk toleransi keamanan:
+// WAV PCM 16-bit mono 16kHz durasi 5 detik berkisar antara ~160KB.
+// Kita berikan batas aman maksimal 500KB untuk menampung header/meta tambahan.
+const MAX_FILE_SIZE_BYTES = 500 * 1024; 
 
 const storage = multer.memoryStorage();
 
+/**
+ * Filter awal Multer untuk memastikan tipe berkas yang masuk berupa audio WAV
+ */
 function fileFilter(req, file, cb) {
   const okMime =
     file.mimetype === 'audio/wav' ||
@@ -28,7 +31,7 @@ function fileFilter(req, file, cb) {
   if (!okMime && !okExt) {
     return cb(
       new AppError(
-        'Format file tidak didukung. Sistem hanya menerima file .wav PCM 16-bit mono sample rate 16 kHz.',
+        'Format file tidak didukung. Sistem hanya menerima file .wav PCM 16-bit mono dengan sample rate 16 kHz.',
         400,
         { code: 'INVALID_AUDIO_TYPE' }
       )
@@ -44,7 +47,7 @@ const uploader = multer({
   limits: { fileSize: MAX_FILE_SIZE_BYTES },
 }).single('audio');
 
-// Helper read functions (little-endian)
+// Helper fungsi pembaca biner (little-endian)
 function readUInt32LE(buf, offset) {
   return buf.readUInt32LE(offset);
 }
@@ -52,6 +55,9 @@ function readUInt16LE(buf, offset) {
   return buf.readUInt16LE(offset);
 }
 
+/**
+ * Membaca susunan struktur biner (RIFF/WAVE Chunks) berkas audio
+ */
 function parseWav(buffer) {
   if (!buffer || buffer.length < 44) {
     throw new AppError('File .wav tidak valid atau rusak.', 400, {
@@ -64,13 +70,12 @@ function parseWav(buffer) {
 
   if (riff !== 'RIFF' || wave !== 'WAVE') {
     throw new AppError(
-      'Format file tidak didukung. Sistem hanya menerima file .wav PCM 16-bit mono sample rate 16 kHz.',
+      'Format file tidak didukung. Sistem hanya menerima file .wav PCM 16-bit mono dengan sample rate 16 kHz.',
       400,
       { code: 'NOT_WAV_RIFF' }
     );
   }
 
-  // chunk scanning
   let offset = 12;
   let fmt = null;
   let data = null;
@@ -117,7 +122,6 @@ function parseWav(buffer) {
       };
     }
 
-    // word aligned
     offset = chunkDataStart + chunkSize + (chunkSize % 2);
     if (fmt && data) break;
   }
@@ -132,7 +136,10 @@ function parseWav(buffer) {
   return { fmt, data };
 }
 
-function validateFormat(fmt) {
+/**
+ * Validasi spesifikasi teknis audio sesuai kebutuhan model AI
+ */
+function validateFormat(fmt, data) {
   if (fmt.audioFormat !== 1) {
     throw new AppError(
       'Format file tidak didukung. Sistem hanya menerima WAV PCM (audioFormat=1).',
@@ -163,52 +170,15 @@ function validateFormat(fmt) {
       errors: [{ bitsPerSample: fmt.bitsPerSample }],
     });
   }
-}
 
-function buildWavBufferFromPcm16Mono(pcmData, sampleRate = WAV_SAMPLE_RATE) {
-  // pcmData is Buffer of signed 16-bit little-endian samples
-  const dataSize = pcmData.length;
-  const headerSize = 44;
-  const fileSizeMinus8 = headerSize - 8 + dataSize;
-
-  const buffer = Buffer.alloc(headerSize + dataSize);
-
-  // RIFF header
-  buffer.write('RIFF', 0, 4, 'ascii');
-  buffer.writeUInt32LE(fileSizeMinus8, 4);
-  buffer.write('WAVE', 8, 4, 'ascii');
-
-  // fmt chunk
-  buffer.write('fmt ', 12, 4, 'ascii');
-  buffer.writeUInt32LE(16, 16); // PCM fmt chunk size
-  buffer.writeUInt16LE(1, 20); // audio format = 1 (PCM)
-  buffer.writeUInt16LE(1, 22); // channels = 1
-  buffer.writeUInt32LE(sampleRate, 24);
-  const byteRate = sampleRate * 1 * 16 / 8;
-  buffer.writeUInt32LE(byteRate, 28);
-  const blockAlign = 1 * 16 / 8;
-  buffer.writeUInt16LE(blockAlign, 32);
-  buffer.writeUInt16LE(16, 34); // bits per sample
-
-  // data chunk
-  buffer.write('data', 36, 4, 'ascii');
-  buffer.writeUInt32LE(dataSize, 40);
-
-  // PCM data
-  pcmData.copy(buffer, 44);
-
-  return buffer;
-}
-
-function normalizeTo1Second(buffer, fmt, data) {
-  const bytesPerSample = (fmt.bitsPerSample / 8) * fmt.numChannels; // 2 bytes
+  // Validasi durasi waktu berdasarkan kalkulasi ukuran byte data PCM masuk
+  const bytesPerSample = (fmt.bitsPerSample / 8) * fmt.numChannels;
   const originalSamples = Math.floor(data.dataSize / bytesPerSample);
-
   const originalDurationSeconds = originalSamples / fmt.sampleRate;
 
-  if (originalSamples > MAX_SAMPLES) {
+  if (originalDurationSeconds > MAX_SECONDS) {
     throw new AppError(
-      `Durasi audio terlalu panjang. Maksimal ${MAX_SECONDS} detik.`,
+      `Durasi audio terlalu panjang. Maksimal waktu perekaman adalah ${MAX_SECONDS} detik.`,
       400,
       {
         code: 'WAV_DURATION_TOO_LONG',
@@ -216,7 +186,6 @@ function normalizeTo1Second(buffer, fmt, data) {
           {
             maxSeconds: MAX_SECONDS,
             originalSeconds: originalDurationSeconds,
-            originalSamples,
             sampleRate: fmt.sampleRate,
           },
         ],
@@ -224,52 +193,19 @@ function normalizeTo1Second(buffer, fmt, data) {
     );
   }
 
-  const pcmStart = data.dataOffset;
-  const pcmEnd = data.dataOffset + data.dataSize;
-  const pcmOriginal = buffer.subarray(pcmStart, pcmEnd); // raw PCM bytes
-
-  // Target PCM bytes for 1 second
-  const targetBytes = TARGET_SAMPLES * bytesPerSample; // 16000 * 2 = 32000
-
-  let pcmNormalized;
-
-  if (originalSamples === TARGET_SAMPLES) {
-    pcmNormalized = pcmOriginal;
-  } else if (originalSamples < TARGET_SAMPLES) {
-    // Zero padding at the end
-    pcmNormalized = Buffer.alloc(targetBytes); // auto-filled with zeros
-    pcmOriginal.copy(pcmNormalized, 0, 0, pcmOriginal.length);
-  } else {
-    // Truncate to first 1 second
-    pcmNormalized = pcmOriginal.subarray(0, targetBytes);
-  }
-
-  const wavNormalized = buildWavBufferFromPcm16Mono(pcmNormalized, fmt.sampleRate);
-
-  return {
-    wavBuffer: wavNormalized,
-    meta: {
-      originalSamples,
-      normalizedSamples: TARGET_SAMPLES,
-      originalDurationSeconds,
-      normalizedDurationSeconds: TARGET_SECONDS,
-      operation:
-        originalSamples === TARGET_SAMPLES
-          ? 'none'
-          : originalSamples < TARGET_SAMPLES
-            ? 'pad'
-            : 'truncate',
-    },
-  };
+  return { originalSamples, originalDurationSeconds };
 }
 
+/**
+ * Middleware Utama Penilai & Penyaring Input Berkas Suara
+ */
 export function uploadAudio(req, res, next) {
   uploader(req, res, (err) => {
     if (err) {
       if (err.code === 'LIMIT_FILE_SIZE') {
         return next(
           new AppError(
-            `Ukuran file terlalu besar. Maksimal durasi ${MAX_SECONDS} detik untuk WAV PCM 16-bit mono 16 kHz.`,
+            `Ukuran file terlalu besar. Maksimal durasi perekaman ${MAX_SECONDS} detik untuk berkas WAV PCM 16-bit mono 16 kHz.`,
             400,
             { code: 'FILE_TOO_LARGE' }
           )
@@ -287,20 +223,21 @@ export function uploadAudio(req, res, next) {
     }
 
     try {
+      // 1. Parsing struktur biner berkas WAV masuk
       const { fmt, data } = parseWav(req.file.buffer);
-      validateFormat(fmt);
+      
+      // 2. Validasi format sekaligus kalkulasi durasi rekaman asli (maks 5 detik)
+      const { originalSamples, originalDurationSeconds } = validateFormat(fmt, data);
 
-      const { wavBuffer, meta } = normalizeTo1Second(req.file.buffer, fmt, data);
-
-      // overwrite buffer with normalized 1-second wav
-      req.file.buffer = wavBuffer;
-
-      // attach metadata for later stages (proxy to AI, logging, etc.)
+      // 3. Masukkan metadata ke dalam objek request untuk kebutuhan controller/logging
+      // Kita mempertahankan Buffer asli tanpa pemotongan lokal karena pemotongan 1 detik dilakukan oleh tim ML
       req.audio = {
         sampleRate: fmt.sampleRate,
         channels: fmt.numChannels,
         bitsPerSample: fmt.bitsPerSample,
-        ...meta,
+        originalSamples,
+        originalDurationSeconds,
+        fileSizeBytes: req.file.size
       };
 
       return next();

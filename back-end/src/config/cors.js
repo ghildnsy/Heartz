@@ -4,7 +4,14 @@ function parseAllowedOrigins(value) {
   if (!value) return [];
   return value
     .split(',')
-    .map((s) => s.trim())
+    .map((s) => {
+      let trimmed = s.trim();
+      // Menghapus trailing slash jika ada agar pencocokan origin konsisten
+      if (trimmed.endsWith('/')) {
+        trimmed = trimmed.slice(0, -1);
+      }
+      return trimmed;
+    })
     .filter(Boolean);
 }
 

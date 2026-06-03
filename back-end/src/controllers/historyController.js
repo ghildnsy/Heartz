@@ -1,117 +1,250 @@
+import { prisma } from '../config/prisma.js';
+import catchAsync from '../utils/catchAsync.js';
 import AppError from '../utils/AppError.js';
+import { GoogleGenAI } from '@google/genai';
 
-const historyList = [
-  {
-    sessionId: 'sess_101',
-    date: '2026-05-25T10:00:00Z',
-    targetSyllable: 'a',
-    isCorrect: true,
-    score: 0.92,
-  },
-  {
-    sessionId: 'sess_102',
-    date: '2026-05-25T10:05:00Z',
-    targetSyllable: 'ba',
-    isCorrect: false,
-    score: 0.65,
-  },
-  {
-    sessionId: 'sess_103',
-    date: '2026-05-25T10:07:00Z',
-    targetSyllable: 'ba',
-    isCorrect: true,
-    score: 0.88,
-  },
-  {
-    sessionId: 'sess_104',
-    date: '2026-05-24T15:30:00Z',
-    targetSyllable: 'ma',
-    isCorrect: true,
-    score: 0.9,
-  },
-  {
-    sessionId: 'sess_105',
-    date: '2026-05-24T15:35:00Z',
-    targetSyllable: 'pa',
-    isCorrect: false,
-    score: 0.55,
-  },
-];
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-export function getHistoryMock(req, res) {
+const generateWeeklyReport = async (stats, rangeLabel) => {
+  try {
+    const model = 'gemini-2.5-flash';
+    const systemInstruction = 'Anda adalah seorang Ahli Terapi Bicara (Speech Therapist) profesional yang ramah, empatik, dan suportif. Tugas Anda adalah memberikan evaluasi klinis singkat sepanjang 2 hingga 3 kalimat berdasarkan data statistik latihan pasien yang diberikan. Berikan motivasi yang membangun dan sebutkan poin performa mereka secara ringkas. JANGAN gunakan format markdown seperti tanda bintang (**) atau bullet-points. Kembalikan teks narasi murni.';
+
+    const prompt = `
+      Berikut adalah statistik latihan bicara pasien dalam rentang waktu ${rangeLabel}:
+      - Total Sesi Latihan: ${stats.totalPracticeCount} kali
+      - Pelafalan Benar (Sukses): ${stats.totalCorrect} kali
+      - Pelafalan Salah: ${stats.totalIncorrect} kali
+      - Rata-rata Skor Akurasi Sistem: ${(stats.overallAccuracy * 100).toFixed(1)}%
+
+      Berikan ringkasan evaluasi perkembangan untuk pasien ini sesuai instruksi sistem!
+    `;
+
+    const response = await ai.models.generateContent({
+      model,
+      contents: prompt,
+      config: { systemInstruction }
+    });
+
+    return response.text.trim();
+  } catch (error) {
+    console.error('Error pada Gemini Service:', error);
+    return `Selamat atas dedikasi Anda dalam menyelesaikan ${stats.totalPracticeCount} sesi latihan selama rentang waktu ${rangeLabel} dengan tingkat akurasi ${(stats.overallAccuracy * 100).toFixed(1)}%. Teruskan latihan Anda secara konsisten untuk mencapai hasil yang optimal!`;
+  }
+};
+
+export const getHistory = catchAsync(async (req, res, next) => {
+  const userId = req.user.userId;
+
+  const practices = await prisma.practiceSession.findMany({
+    where: { userId },
+    orderBy: { createdAt: 'desc' },
+    include: {
+      targetSyllable: {
+        select: {
+          code: true,
+        },
+      },
+    },
+  });
+
+  const formattedHistory = practices.map((session) => ({
+    sessionId: session.id,
+    date: session.createdAt,
+    targetSyllable: session.targetSyllable.code,
+    isCorrect: session.isCorrect,
+    score: session.score,
+  }));
+
   return res.status(200).json({
     status: 'success',
     statusCode: 200,
-    results: historyList.length,
-    data: historyList,
+    results: formattedHistory.length,
+    data: formattedHistory,
   });
-}
+});
 
-export function getHistorySummaryMock(req, res) {
+export const getHistoryBySessionId = catchAsync(async (req, res, next) => {
+  const { sessionId } = req.params;
+  const userId = req.user.userId;
+
+  if (!sessionId) {
+    return next(
+      new AppError('Parameter Session ID tidak valid atau tidak disertakan.', 400, {
+        code: 'INVALID_SESSION_ID',
+      })
+    );
+  }
+
+  const session = await prisma.practiceSession.findFirst({
+    where: {
+      id: sessionId,
+      userId,
+    },
+    include: {
+      targetSyllable: true,
+      audioFile: true,
+      prediction: true,
+    },
+  });
+
+  if (!session) {
+    return next(
+      new AppError(`Data riwayat latihan dengan ID Sesi ${sessionId} tidak ditemukan.`, 404, {
+        code: 'SESSION_NOT_FOUND',
+      })
+    );
+  }
+
+  const predictionData = session.prediction;
+  const audioFileData = session.audioFile;
+
   return res.status(200).json({
     status: 'success',
     statusCode: 200,
     data: {
-      week: '2026-W21',
-      totalPracticeCount: 35,
-      overallAccuracy: 0.82,
-      mostPracticed: 'ba',
-      needsImprovement: 'pa',
-      geminiWeeklyReport:
-        "Minggu ini Anda menunjukkan dedikasi yang sangat baik. Akurasi pelafalan vokal Anda stabil, namun mari fokus memberikan tekanan lebih pada bibir untuk suku kata 'pa' di sesi latihan minggu depan.",
+      sessionId: session.id,
+      date: session.createdAt,
+      targetSyllable: session.targetSyllable.code,
+      predictedSyllable: predictionData ? session.targetSyllable.code : 'tidak terdeteksi',
+      isCorrect: session.isCorrect,
+      score: session.score,
+      audioUrl: audioFileData
+        ? `https://${audioFileData.s3Bucket}.s3.${process.env.AWS_REGION || 'ap-southeast-3'}.amazonaws.com/${audioFileData.s3Key}`
+        : null,
+      affirmation: predictionData ? predictionData.affirmation : 'Terus berlatih untuk hasil maksimal!',
     },
   });
-}
+});
 
-export function getHistoryBySessionIdMock(req, res, next) {
-  const { sessionId } = req.params;
+export const getHistorySummary = catchAsync(async (req, res, next) => {
+  const userId = req.user.userId;
+  const { range } = req.query;
 
-  if (!sessionId) {
-    return next(new AppError('Session ID tidak valid.', 400, { code: 'INVALID_SESSION_ID' }));
+  const endDate = new Date();
+  let startDate;
+  let rangeLabel = '7 hari terakhir';
+  let cacheKeyDate;
+
+  if (range === '30d') {
+    startDate = new Date();
+    startDate.setDate(endDate.getDate() - 30);
+    rangeLabel = '30 hari terakhir';
+    cacheKeyDate = startDate;
+  } else if (range === 'all') {
+    startDate = new Date(0); 
+    rangeLabel = 'seluruh waktu latihan (All-Time)';
+    cacheKeyDate = new Date('1970-01-01T00:00:00.000Z');
+  } else {
+    startDate = new Date();
+    startDate.setDate(endDate.getDate() - 7);
+    rangeLabel = '7 hari terakhir';
+    cacheKeyDate = startDate;
   }
 
-  // Use the exact example from your spec when sess_102 is requested
-  if (sessionId === 'sess_102') {
+  const historyData = await prisma.practiceSession.findMany({
+    where: {
+      userId,
+      createdAt: {
+        gte: startDate,
+        lte: endDate,
+      },
+    },
+  });
+
+  const totalPracticeCount = historyData.length;
+
+  if (totalPracticeCount === 0) {
     return res.status(200).json({
       status: 'success',
       statusCode: 200,
       data: {
-        sessionId: 'sess_102',
-        date: '2026-05-25T10:05:00Z',
-        targetSyllable: 'ba',
-        predictedSyllable: 'pa',
-        isCorrect: false,
-        score: 0.65,
-        waveformMetrics: [0.05, 0.2, 0.45, 0.3, 0.15],
-        affirmation:
-          "Bentuk bibir sudah hampir tepat, namun getaran udara yang dikeluarkan terlalu kuat sehingga terbaca sebagai 'pa'. Coba kurangi letupan udara pada repetisi berikutnya.",
+        timeRange: {
+          startDate: range === 'all' ? 'ALL_TIME' : startDate.toISOString(),
+          endDate: endDate.toISOString(),
+        },
+        stats: {
+          totalPracticeCount: 0,
+          totalCorrect: 0,
+          totalIncorrect: 0,
+          overallAccuracy: 0.0,
+        },
+        geminiWeeklyReport: `Anda belum memiliki catatan sesi latihan dalam rentang ${rangeLabel}. Silakan lakukan latihan pelafalan terlebih dahulu untuk melihat perkembangan AI di sini!`,
       },
     });
   }
 
-  // Otherwise, return a generic derived detail if found in list
-  const found = historyList.find((s) => s.sessionId === sessionId);
-  if (!found) {
-    // Spec doesn't define this explicitly; return 404 as reasonable mock behavior
-    return next(new AppError(`Riwayat dengan sessionId ${sessionId} tidak ditemukan.`, 404, {
-      code: 'SESSION_NOT_FOUND',
-    }));
+  let totalCorrect = 0;
+  let totalIncorrect = 0;
+  let totalScore = 0;
+
+  historyData.forEach((item) => {
+    if (item.isCorrect === true) {
+      totalCorrect++;
+    } else {
+      totalIncorrect++;
+    }
+    totalScore += item.score || 0;
+  });
+
+  const overallAccuracy = parseFloat((totalScore / totalPracticeCount).toFixed(2));
+
+  const currentStats = {
+    totalPracticeCount,
+    totalCorrect,
+    totalIncorrect,
+    overallAccuracy,
+  };
+
+  const existingSummary = await prisma.weeklySummary.findFirst({
+    where: { 
+      userId,
+      weekStart: range === 'all' ? cacheKeyDate : { gte: cacheKeyDate }
+    },
+  });
+
+  let reportText = '';
+
+  if (existingSummary) {
+    if (existingSummary.totalPracticeCount === totalPracticeCount) {
+      reportText = existingSummary.geminiWeeklyReport;
+    } else {
+      reportText = await generateWeeklyReport(currentStats, rangeLabel);
+
+      await prisma.weeklySummary.update({
+        where: { id: existingSummary.id },
+        data: {
+          weekStart: cacheKeyDate,
+          totalPracticeCount,
+          overallAccuracy,
+          geminiWeeklyReport: reportText,
+        },
+      });
+    }
+  } else {
+    reportText = await generateWeeklyReport(currentStats, rangeLabel);
+
+    await prisma.weeklySummary.create({
+      data: {
+        userId,
+        weekStart: cacheKeyDate,
+        totalPracticeCount,
+        overallAccuracy,
+        geminiWeeklyReport: reportText,
+      },
+    });
   }
 
   return res.status(200).json({
     status: 'success',
     statusCode: 200,
     data: {
-      sessionId: found.sessionId,
-      date: found.date,
-      targetSyllable: found.targetSyllable,
-      predictedSyllable: found.isCorrect ? found.targetSyllable : 'pa',
-      isCorrect: found.isCorrect,
-      score: found.score,
-      waveformMetrics: [0.12, 0.45, 0.22, 0.18, 0.09],
-      affirmation: found.isCorrect
-        ? `Bagus! Sesi ${found.targetSyllable} Anda menunjukkan hasil yang konsisten.`
-        : `Ayo coba lagi—pelafalan '${found.targetSyllable}' Anda masih perlu sedikit penyesuaian.`,
+      timeRange: {
+        startDate: range === 'all' ? 'ALL_TIME' : startDate.toISOString(),
+        endDate: endDate.toISOString(),
+      },
+      stats: currentStats,
+      geminiWeeklyReport: reportText,
     },
   });
-}
+});

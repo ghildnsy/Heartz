@@ -1,16 +1,16 @@
 import { Router } from 'express';
-import mockAuth from '../middlewares/mockAuth.js';
+import auth from '../middlewares/auth.js';
 import {
-  getHistoryMock,
-  getHistorySummaryMock,
-  getHistoryBySessionIdMock,
+  getHistory,
+  getHistorySummary,
+  getHistoryBySessionId,
 } from '../controllers/historyController.js';
 
 const router = Router();
 
-// Protected routes
-router.get('/', mockAuth, getHistoryMock);
-router.get('/summary', mockAuth, getHistorySummaryMock);
-router.get('/:sessionId', mockAuth, getHistoryBySessionIdMock);
+// Semua endpoint riwayat latihan dikunci dengan validasi token keamanan JWT riyal
+router.get('/', auth, getHistory);
+router.get('/summary', auth, getHistorySummary);
+router.get('/:sessionId', auth, getHistoryBySessionId);
 
 export default router;
