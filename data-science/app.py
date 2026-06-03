@@ -71,18 +71,37 @@ st.markdown("""
 # Data Loading
 @st.cache_data
 def load_data():
-    # Get the dataset path (app.py is in data-science folder)
+    """Load CSV data with error handling"""
     base_path = Path(__file__).parent / "dataset" / "metadata"
     
+    df_features = pd.DataFrame()
+    df_clean = pd.DataFrame()
+    
     try:
-        df_features = pd.read_csv(base_path / "features_augmented.csv")
-    except:
-        df_features = pd.DataFrame()
+        features_path = base_path / "features_augmented.csv"
+        if features_path.exists():
+            df_features = pd.read_csv(features_path)
+            # Ensure required columns exist
+            if 'label' not in df_features.columns:
+                st.error("❌ Kolom 'label' tidak ditemukan di features_augmented.csv")
+                return pd.DataFrame(), pd.DataFrame()
+            
+            # Add is_augmented column if not exists
+            if 'augmentation_type' not in df_features.columns:
+                df_features['augmentation_type'] = 'original'
+            
+            df_features['is_augmented'] = df_features['augmentation_type'].apply(
+                lambda x: 'Original' if x == 'original' else 'Augmented'
+            )
+    except Exception as e:
+        st.warning(f"⚠️ Error loading features_augmented.csv: {e}")
         
     try:
-        df_clean = pd.read_csv(base_path / "metadata_clean.csv")
-    except:
-        df_clean = pd.DataFrame()
+        clean_path = base_path / "metadata_clean.csv"
+        if clean_path.exists():
+            df_clean = pd.read_csv(clean_path)
+    except Exception as e:
+        st.warning(f"⚠️ Error loading metadata_clean.csv: {e}")
         
     return df_features, df_clean
 
