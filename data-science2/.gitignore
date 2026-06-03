@@ -2,4 +2,3 @@ venv/
 scraped/
 __pycache__/
 figs/
-*.csv
