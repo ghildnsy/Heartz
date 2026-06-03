@@ -1,17 +1,44 @@
 import { prisma } from '../config/prisma.js';
 import catchAsync from '../utils/catchAsync.js';
 import AppError from '../utils/AppError.js';
+import { GoogleGenAI } from '@google/genai';
 
-/**
- * 1. AMBIL DAFTAR RIWAYAT LATIHAN (GET ALL HISTORY)
- */
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+const generateWeeklyReport = async (stats, rangeLabel) => {
+  try {
+    const model = 'gemini-2.5-flash';
+    const systemInstruction = 'Anda adalah seorang Ahli Terapi Bicara (Speech Therapist) profesional yang ramah, empatik, dan suportif. Tugas Anda adalah memberikan evaluasi klinis singkat sepanjang 2 hingga 3 kalimat berdasarkan data statistik latihan pasien yang diberikan. Berikan motivasi yang membangun dan sebutkan poin performa mereka secara ringkas. JANGAN gunakan format markdown seperti tanda bintang (**) atau bullet-points. Kembalikan teks narasi murni.';
+
+    const prompt = `
+      Berikut adalah statistik latihan bicara pasien dalam rentang waktu ${rangeLabel}:
+      - Total Sesi Latihan: ${stats.totalPracticeCount} kali
+      - Pelafalan Benar (Sukses): ${stats.totalCorrect} kali
+      - Pelafalan Salah: ${stats.totalIncorrect} kali
+      - Rata-rata Skor Akurasi Sistem: ${(stats.overallAccuracy * 100).toFixed(1)}%
+
+      Berikan ringkasan evaluasi perkembangan untuk pasien ini sesuai instruksi sistem!
+    `;
+
+    const response = await ai.models.generateContent({
+      model,
+      contents: prompt,
+      config: { systemInstruction }
+    });
+
+    return response.text.trim();
+  } catch (error) {
+    console.error('Error pada Gemini Service:', error);
+    return `Selamat atas dedikasi Anda dalam menyelesaikan ${stats.totalPracticeCount} sesi latihan selama rentang waktu ${rangeLabel} dengan tingkat akurasi ${(stats.overallAccuracy * 100).toFixed(1)}%. Teruskan latihan Anda secara konsisten untuk mencapai hasil yang optimal!`;
+  }
+};
+
 export const getHistory = catchAsync(async (req, res, next) => {
-  const userId = req.user.userId; // Diambil secara aman dari token JWT via middleware auth
+  const userId = req.user.userId;
 
-  // Tarik data practiceSession dari AWS RDS yang berelasi dengan tabel master syllables
   const practices = await prisma.practiceSession.findMany({
     where: { userId },
-    orderBy: { createdAt: 'desc' }, // Tampilkan latihan terbaru di posisi paling atas
+    orderBy: { createdAt: 'desc' },
     include: {
       targetSyllable: {
         select: {
@@ -21,7 +48,6 @@ export const getHistory = catchAsync(async (req, res, next) => {
     },
   });
 
-  // Transformasi format data agar serasi dengan kebutuhan visual struktur Front-End
   const formattedHistory = practices.map((session) => ({
     sessionId: session.id,
     date: session.createdAt,
@@ -38,9 +64,6 @@ export const getHistory = catchAsync(async (req, res, next) => {
   });
 });
 
-/**
- * 2. AMBIL DETAIL EVALUASI SESI (GET HISTORY BY SESSION ID)
- */
 export const getHistoryBySessionId = catchAsync(async (req, res, next) => {
   const { sessionId } = req.params;
   const userId = req.user.userId;
@@ -53,16 +76,15 @@ export const getHistoryBySessionId = catchAsync(async (req, res, next) => {
     );
   }
 
-  // Melakukan join relasi menggunakan properti tunggal yang terbukti valid hasil debug
   const session = await prisma.practiceSession.findFirst({
     where: {
       id: sessionId,
-      userId, // Memastikan pengguna tidak bisa mengintip data riwayat milik orang lain
+      userId,
     },
     include: {
       targetSyllable: true,
-      audioFile: true,   // Relasi langsung yang valid pada model practiceSession
-      prediction: true,  // Nama properti tunggal yang valid hasil debug
+      audioFile: true,
+      prediction: true,
     },
   });
 
@@ -74,7 +96,6 @@ export const getHistoryBySessionId = catchAsync(async (req, res, next) => {
     );
   }
 
-  // Ambil objek data dari properti relasi tunggal
   const predictionData = session.prediction;
   const audioFileData = session.audioFile;
 
@@ -88,8 +109,7 @@ export const getHistoryBySessionId = catchAsync(async (req, res, next) => {
       predictedSyllable: predictionData ? session.targetSyllable.code : 'tidak terdeteksi',
       isCorrect: session.isCorrect,
       score: session.score,
-      // Mengakses metadata S3 langsung dari objek audioFile hasil include
-      audioUrl: audioFileData 
+      audioUrl: audioFileData
         ? `https://${audioFileData.s3Bucket}.s3.${process.env.AWS_REGION || 'ap-southeast-3'}.amazonaws.com/${audioFileData.s3Key}`
         : null,
       affirmation: predictionData ? predictionData.affirmation : 'Terus berlatih untuk hasil maksimal!',
@@ -97,89 +117,134 @@ export const getHistoryBySessionId = catchAsync(async (req, res, next) => {
   });
 });
 
-/**
- * 3. AMBIL RINGKASAN LAPORAN MINGGUAN GEMINI (GET WEEKLY SUMMARY)
- */
 export const getHistorySummary = catchAsync(async (req, res, next) => {
   const userId = req.user.userId;
+  const { range } = req.query;
 
-  // Mendapatkan kode minggu saat ini
-  const currentDate = new Date();
-  const day = currentDate.getDay();
-  const diff = currentDate.getDate() - day + (day === 0 ? -6 : 1); // Mundur ke hari Senin terdekat
-  const mondayStart = new Date(currentDate.setDate(diff));
-  mondayStart.setHours(0, 0, 0, 0);
+  const endDate = new Date();
+  let startDate;
+  let rangeLabel = '7 hari terakhir';
+  let cacheKeyDate;
 
-  const startOfYear = new Date(mondayStart.getFullYear(), 0, 1);
-  const daysDiff = Math.floor((mondayStart - startOfYear) / (24 * 60 * 60 * 1000));
-  const weekNumber = Math.ceil((daysDiff + startOfYear.getDay() + 1) / 7);
-  const currentWeekCode = `${mondayStart.getFullYear()}-W${weekNumber.toString().padStart(2, '0')}`;
+  if (range === '30d') {
+    startDate = new Date();
+    startDate.setDate(endDate.getDate() - 30);
+    rangeLabel = '30 hari terakhir';
+    cacheKeyDate = startDate;
+  } else if (range === 'all') {
+    startDate = new Date(0); 
+    rangeLabel = 'seluruh waktu latihan (All-Time)';
+    cacheKeyDate = new Date('1970-01-01T00:00:00.000Z');
+  } else {
+    startDate = new Date();
+    startDate.setDate(endDate.getDate() - 7);
+    rangeLabel = '7 hari terakhir';
+    cacheKeyDate = startDate;
+  }
 
-  // Cek apakah ringkasan laporan minggu ini sudah tercatat di database
-  const existingSummary = await prisma.weeklySummary.findFirst({
+  const historyData = await prisma.practiceSession.findMany({
     where: {
       userId,
-      weekStart: mondayStart,
+      createdAt: {
+        gte: startDate,
+        lte: endDate,
+      },
     },
   });
 
-  if (existingSummary) {
+  const totalPracticeCount = historyData.length;
+
+  if (totalPracticeCount === 0) {
     return res.status(200).json({
       status: 'success',
       statusCode: 200,
       data: {
-        week: currentWeekCode,
-        totalPracticeCount: existingSummary.totalPracticeCount,
-        overallAccuracy: existingSummary.overallAccuracy,
-        geminiWeeklyReport: existingSummary.geminiWeeklyReport,
+        timeRange: {
+          startDate: range === 'all' ? 'ALL_TIME' : startDate.toISOString(),
+          endDate: endDate.toISOString(),
+        },
+        stats: {
+          totalPracticeCount: 0,
+          totalCorrect: 0,
+          totalIncorrect: 0,
+          overallAccuracy: 0.0,
+        },
+        geminiWeeklyReport: `Anda belum memiliki catatan sesi latihan dalam rentang ${rangeLabel}. Silakan lakukan latihan pelafalan terlebih dahulu untuk melihat perkembangan AI di sini!`,
       },
     });
   }
 
-  // Jika belum ada laporan, lakukan agregasi statistik riyal dari seluruh sesi latihan
-  const userPractices = await prisma.practiceSession.findMany({
-    where: { userId },
+  let totalCorrect = 0;
+  let totalIncorrect = 0;
+  let totalScore = 0;
+
+  historyData.forEach((item) => {
+    if (item.isCorrect === true) {
+      totalCorrect++;
+    } else {
+      totalIncorrect++;
+    }
+    totalScore += item.score || 0;
   });
 
-  if (userPractices.length === 0) {
-    return res.status(200).json({
-      status: 'success',
-      statusCode: 200,
-      data: {
-        week: currentWeekCode,
-        totalPracticeCount: 0,
-        overallAccuracy: 0.0,
-        geminiWeeklyReport: "Selamat datang di Heartz! Anda belum memulai sesi latihan. Mari pilih satu suku kata di atas dan mulailah melatih pelafalan Anda hari ini.",
-      },
-    });
-  }
-
-  // Hitung jumlah akumulasi latihan dan rata-rata skor akurasi
-  const totalPracticeCount = userPractices.length;
-  const totalScore = userPractices.reduce((sum, item) => sum + item.score, 0);
   const overallAccuracy = parseFloat((totalScore / totalPracticeCount).toFixed(2));
 
-  const standardGeminiReport = `Minggu ini Anda menunjukkan dedikasi yang sangat baik dengan menyelesaikan ${totalPracticeCount} sesi latihan. Akurasi rata-rata pelafalan Anda berada di angka ${(overallAccuracy * 100).toFixed(1)}%. Pertahankan ritme belajar ini secara konsisten di minggu berikutnya!`;
+  const currentStats = {
+    totalPracticeCount,
+    totalCorrect,
+    totalIncorrect,
+    overallAccuracy,
+  };
 
-  // Simpan laporan kalkulasi baru tersebut ke dalam database
-  const newSummary = await prisma.weeklySummary.create({
-    data: {
+  const existingSummary = await prisma.weeklySummary.findFirst({
+    where: { 
       userId,
-      weekStart: mondayStart,
-      totalPracticeCount,
-      overallAccuracy,
-      geminiWeeklyReport: standardGeminiReport,
+      weekStart: range === 'all' ? cacheKeyDate : { gte: cacheKeyDate }
     },
   });
+
+  let reportText = '';
+
+  if (existingSummary) {
+    if (existingSummary.totalPracticeCount === totalPracticeCount) {
+      reportText = existingSummary.geminiWeeklyReport;
+    } else {
+      reportText = await generateWeeklyReport(currentStats, rangeLabel);
+
+      await prisma.weeklySummary.update({
+        where: { id: existingSummary.id },
+        data: {
+          weekStart: cacheKeyDate,
+          totalPracticeCount,
+          overallAccuracy,
+          geminiWeeklyReport: reportText,
+        },
+      });
+    }
+  } else {
+    reportText = await generateWeeklyReport(currentStats, rangeLabel);
+
+    await prisma.weeklySummary.create({
+      data: {
+        userId,
+        weekStart: cacheKeyDate,
+        totalPracticeCount,
+        overallAccuracy,
+        geminiWeeklyReport: reportText,
+      },
+    });
+  }
 
   return res.status(200).json({
     status: 'success',
     statusCode: 200,
     data: {
-      week: currentWeekCode,
-      totalPracticeCount: newSummary.totalPracticeCount,
-      overallAccuracy: newSummary.overallAccuracy,
-      geminiWeeklyReport: newSummary.geminiWeeklyReport,
+      timeRange: {
+        startDate: range === 'all' ? 'ALL_TIME' : startDate.toISOString(),
+        endDate: endDate.toISOString(),
+      },
+      stats: currentStats,
+      geminiWeeklyReport: reportText,
     },
   });
 });
