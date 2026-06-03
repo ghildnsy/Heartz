@@ -1,4 +1,4 @@
-# 🫀 Heartz — Data Science Pipeline
+# 🫀 Heartz - Data Science Pipeline
 
 Pipeline otomatis persiapan dataset audio untuk CNN 2D klasifikasi **20 suku kata** .
 
