@@ -1,0 +1,26 @@
+# Frontend
+front-end/node_modules/
+front-end/dist/
+
+# Backend
+back-end/node_modules/
+
+# Machine Learning
+machine-learning/data/
+machine-learning/outputs/
+
+# Model files
+*.keras
+*.h5
+*.pkl
+
+# skills
+skills
+
+# Audio files
+*.wav
+*.mp3
+
+# Environment
+.env
+*.env
