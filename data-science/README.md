@@ -21,7 +21,7 @@ manual_downloads/ → downloads/ → raw/ → clean/ → augmented/
 
 ---
 
-## ⚙️ STEP 0 — Setup Environment
+## ⚙️ STEP 0 - Setup Environment
 
 - Install dependencies dari `requirements.txt`
 - Inisialisasi folder dataset dan import semua modul
@@ -29,7 +29,7 @@ manual_downloads/ → downloads/ → raw/ → clean/ → augmented/
 
 ---
 
-## 📥 STEP 1 — Preparation
+## 📥 STEP 1 - Preparation
 
 **Input:** File media manual (video/audio) yang sudah diunduh
 **Output:** Audio WAV standar (16kHz, mono)
@@ -38,7 +38,7 @@ Letakkan file di folder **`dataset/manual_downloads/`** Lalu jalankan cell untuk
 
 ---
 
-## ✂️ STEP 2 — Splitting (Potong Audio per Suku Kata)
+## ✂️ STEP 2 - Splitting (Potong Audio per Suku Kata)
 
 **Input:** Audio file dari `dataset/downloads/`
 **Output:** Potongan audio per suku kata di `dataset/raw/`
@@ -58,7 +58,7 @@ Sistem split menggunakan **automatic labeling** berdasarkan nama file:
 
 ---
 
-## 🧹 STEP 3 — Cleaning
+## 🧹 STEP 3 - Cleaning
 
 **Input:** Audio kasar dari `dataset/raw/`
 **Output:** Audio bersih di `dataset/clean/`
@@ -70,7 +70,7 @@ Setiap audio file diproses melalui 5 tahap otomatis:
 #### 1. **Noise Reduction** (Kurangi Kebisingan)
 
 - Menghilangkan background noise (suara AC, kipas angin, dll)
-- Teknik: Spectral Gating — menganalisis frekuensi mana yang adalah noise, lalu kurangi intensitasnya
+- Teknik: Spectral Gating - menganalisis frekuensi mana yang adalah noise, lalu kurangi intensitasnya
 - Hasil: Audio lebih bersih, hanya terdengar suara bicara
 
 #### 2. **High-Pass Filter** (Buang Frekuensi Rendah)
@@ -87,7 +87,7 @@ Setiap audio file diproses melalui 5 tahap otomatis:
 
 #### 4. **Normalisasi Volume dengan RMS**
 
-- **RMS = Root Mean Square** — mengukur power/energi audio secara keseluruhan
+- **RMS = Root Mean Square** - mengukur power/energi audio secara keseluruhan
 - Target: **-20 dBFS** (satuan volume standar industri)
 - Cara kerja:
   - Hitung RMS saat ini dari audio file
@@ -110,12 +110,12 @@ Setiap audio file diproses melalui 5 tahap otomatis:
 
 ### 📊 Visualisasi Perubahan
 
-- **Waveform** (gelombang) — terlihat lebih rapi dan smooth
-- **Spectrogram** (frekuensi)— frekuensi aneh sudah hilang
+- **Waveform** (gelombang) - terlihat lebih rapi dan smooth
+- **Spectrogram** (frekuensi) - frekuensi aneh sudah hilang
 
 ---
 
-## STEP 4 — Perbanyak Data (Data Augmentation)
+## STEP 4 - Perbanyak Data (Data Augmentation)
 
 - Karena ada beberapa data yang masih tidak cukup (Bi), maka dengan menggandakan setiap file original menjadi **4 variasi**, masing-masing menggunakan teknik berbeda:
 
@@ -130,11 +130,11 @@ Hasilnya pun data telah tercukupi dan tersimpan di folder **`dataset/augmented/`
 
 ---
 
-## STEP 5 — Analisis Data (EDA - Exploratory Data Analysis)
+## STEP 5 - Analisis Data (EDA - Exploratory Data Analysis)
 
 ### 📊 Output EDA yang Ditampilkan
 
-#### 1. **Bar Chart — Distribusi Per Kelas**
+#### 1. **Bar Chart - Distribusi Per Kelas**
 
 ```
 📊 Grafik jumlah file per suku kata
@@ -225,7 +225,7 @@ Jika ada yang ❌ → **Kembali ke STEP 2/3** dan perbaiki data sebelum lanjut.
 
 ---
 
-## STEP 6 — Export & Serah Terima ke Tim AI
+## STEP 6 - Export & Serah Terima ke Tim AI
 
 ### 📦 Output yang Dihasilkan
 
@@ -365,7 +365,7 @@ Setelah STEP 6 selesai, **siapkan 2 hal untuk diserahkan**:
 - Jika sudah ada → **SKIP**, tidak di-convert ulang
 - Jika belum ada → Convert baru
 
-**⚠️ STEP 2 (Splitting) — PERLU HATI-HATI:**
+**⚠️ STEP 2 (Splitting) - PERLU HATI-HATI:**
 
 - Fungsi `split_audio_selective()` menggunakan `generate_next_filename()` untuk generate nama file otomatis
 - Cara kerja: Cari file tertinggi di folder (misal: `Ba_0005.wav`), lalu buat file baru nomor +1 (misal: `Ba_0006.wav`)

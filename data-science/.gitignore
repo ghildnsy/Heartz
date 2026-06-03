@@ -1,4 +1,45 @@
+# Virtual Environments
 .venv/
 venv/
+env/
+ENV/
+
+# Python Cache
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+
+# Jupyter
+.ipynb_checkpoints/
+.jupyter/
+
+# IDE & OS
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Dataset (too large)
+dataset/manual_downloads/
+dataset/downloads/
+dataset/raw/
+dataset/clean/
+dataset/augmented/
+
+QUICK_DEPLOY.md
+
+# Streamlit cache
+.streamlit/
+
+# OS & Logs
+*.log
+.tmp/
+temp/
