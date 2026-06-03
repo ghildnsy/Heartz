@@ -64,7 +64,9 @@ st.markdown("""
 @st.cache_data
 def load_data():
     """Load dataset dari CSV"""
-    csv_path = os.path.join(os.getcwd(), 'dataset', 'syllable_features.csv')
+    # Gunakan path relatif terhadap file app.py, bukan working directory
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    csv_path = os.path.join(script_dir, 'dataset', 'syllable_features.csv')
     
     if not os.path.exists(csv_path):
         return None
