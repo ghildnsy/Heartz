@@ -17,7 +17,7 @@ Front-end sudah memenuhi kebutuhan utama aplikasi web:
 - Memiliki mockup/desain UI sebagai representasi antarmuka aplikasi.
 - Memiliki layout responsif untuk desktop dan mobile.
 - Build production berhasil dijalankan.
-- Front-end akan di-deploy ke Vercel.
+- Front-end di-deploy ke Vercel.
 
 Mockup high fidelity dapat dilihat di Figma: [High Fidelity Mockup for Heartz](https://www.figma.com/make/oDz05507VB5IRgjYUW4kFr/High-Fidelity-Mockup-for-Heartz?code-node-id=0-9&p=f&t=A3bwrrIxaQXObjVo-0&fullscreen=1).
 
@@ -76,6 +76,12 @@ Endpoint yang digunakan oleh front-end:
 - `GET /api/history`
 - `GET /api/history/summary`
 - `GET /api/history/:sessionId`
+
+Catatan runtime:
+
+- `GET /api/predict/warmup` dipanggil hanya pada halaman sesi latihan `/practice/:syllable`.
+- Saat user idle di halaman sesi latihan dan tab masih aktif, front-end melakukan warmup berkala untuk membantu menjaga service prediksi tetap siap.
+- Halaman pemilihan card `/practice` tidak memanggil endpoint warmup.
 
 ### AI/ML Integration
 
@@ -161,11 +167,13 @@ Keterangan:
 - `VITE_API_BASE_URL`: base URL API untuk environment yang sedang dipakai, misalnya backend lokal saat development atau backend production saat deploy.
 - `VITE_USE_API_PROXY`: gunakan `true` hanya jika ingin memakai proxy Vite saat development lokal.
 - `.env`, `.env.local`, dan file env nyata lain tidak boleh di-commit. Commit hanya `.env.example` sebagai template.
+- Untuk deployment HTTPS seperti Vercel, `VITE_API_BASE_URL` juga harus memakai backend HTTPS. Browser akan memblokir request dari front-end HTTPS ke backend HTTP sebagai mixed content.
 
 Untuk deployment Vercel, environment variable utama yang wajib diisi adalah:
 
 ```env
 VITE_API_BASE_URL=https://your-backend-api-url.example.com
+VITE_USE_API_PROXY=false
 ```
 
 ## Cara Menjalankan Lokal
@@ -216,7 +224,10 @@ Tambahkan environment variable di dashboard Vercel:
 
 ```env
 VITE_API_BASE_URL=https://your-backend-api-url.example.com
+VITE_USE_API_PROXY=false
 ```
+
+Untuk environment dropdown di Vercel, gunakan `Production and Preview` agar build production dan preview memakai konfigurasi API yang sama.
 
 Karena aplikasi menggunakan React Router, deployment SPA perlu rewrite semua route ke `index.html`. Jika belum ada, tambahkan file `vercel.json` di folder `front-end`:
 
@@ -234,8 +245,34 @@ Karena aplikasi menggunakan React Router, deployment SPA perlu rewrite semua rou
 Setelah deploy berhasil, URL Vercel dapat dicantumkan di bagian ini:
 
 ```text
-Production URL: -
+Production URL: https://heartz-speech.vercel.app
 ```
+
+## Kebutuhan Backend Production
+
+Front-end production berjalan di Vercel dan memanggil backend cloud melalui `VITE_API_BASE_URL`. Backend production harus memenuhi beberapa hal berikut:
+
+- Backend API harus tersedia lewat HTTPS.
+- Backend harus mengizinkan CORS dari origin front-end production: `https://heartz-speech.vercel.app`.
+- Karena front-end menggunakan `withCredentials: true`, backend tidak boleh memakai CORS origin `*`. Gunakan exact origin dan aktifkan credentials.
+- Preflight `OPTIONS` harus mengembalikan header CORS yang sesuai.
+- Jika backend menggunakan refresh token via cookie, cookie production harus kompatibel dengan cross-site request:
+
+```text
+HttpOnly
+Secure
+SameSite=None
+Path=/ atau path yang mencakup /api/auth/refresh dan /api/auth/logout
+```
+
+Endpoint yang bergantung pada refresh token cookie, terutama `POST /api/auth/refresh` dan `POST /api/auth/logout`, harus menerima cookie tersebut dari origin Vercel.
+
+## Troubleshooting Deploy
+
+- `Mixed Content`: `VITE_API_BASE_URL` masih memakai `http://`. Ganti ke backend `https://` lalu redeploy Vercel.
+- `No Access-Control-Allow-Origin`: backend CORS belum mengizinkan `https://heartz-speech.vercel.app`.
+- `REFRESH_TOKEN_REQUIRED` saat logout atau refresh session gagal: refresh token cookie tidak terkirim atau tidak terbaca backend. Cek `Set-Cookie`, `SameSite=None`, `Secure`, `Path`, dan parser cookie backend.
+- `net::ERR_TIMED_OUT`: backend HTTPS tidak dapat dijangkau atau service backend sedang tidak aktif.
 
 ## Checklist Pemenuhan Kriteria
 
@@ -253,12 +290,12 @@ Production URL: -
 | Layout responsif | Terpenuhi | Tailwind breakpoint `sm`, `md`, `lg`, `xl` |
 | Tailwind CSS | Terpenuhi | Styling utama aplikasi |
 | Axios | Terpenuhi | HTTP client utama |
-| Deployment web | Akan dipenuhi | Front-end disiapkan untuk Vercel |
+| Deployment web | Terpenuhi | Front-end di-deploy ke Vercel |
 
 ## Catatan Reviewer
 
 - Aplikasi ini adalah front-end production-ready untuk Heartz.
 - Backend lokal dan folder machine-learning lokal tidak perlu dijalankan untuk menilai front-end ini.
 - Fitur utama dapat dipahami dari alur: pilih target latihan, rekam audio, kirim ke API prediksi, tampilkan feedback, lalu lihat progres.
-- Jika ingin menguji penuh sampai prediksi AI, pastikan `VITE_API_BASE_URL` mengarah ke API yang aktif dan mendukung CORS dari domain Vercel.
+- Jika ingin menguji penuh sampai prediksi AI, pastikan `VITE_API_BASE_URL` mengarah ke API HTTPS yang aktif dan mendukung CORS dari domain Vercel.
 - Jika hanya ingin memeriksa UI dan build, jalankan `npm install`, `npm run build`, dan `npm run preview`.
