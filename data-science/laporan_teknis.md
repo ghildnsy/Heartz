@@ -1,4 +1,4 @@
-# Laporan Teknis: Heartz — Speech Therapy Data Pipeline
+# Laporan Teknis: Heartz - Speech Therapy Data Pipeline
 **Proyek Akhir Data Science**
 
 ## 1. Problem Discovery
