@@ -120,13 +120,13 @@ npm install
 Buat file `.env.local` berdasarkan `.env.example`:
 
 ```env
-VITE_API_BASE_URL=https://heartz-server.onrender.com
+VITE_API_BASE_URL=https://your-backend-api-url
 VITE_USE_API_PROXY=false
 ```
 
 Keterangan:
 
-- `VITE_API_BASE_URL` adalah URL backend API yang digunakan front-end.
+- `VITE_API_BASE_URL` adalah URL backend API yang digunakan front-end, misalnya URL backend lokal atau URL deployment backend.
 - `VITE_USE_API_PROXY=false` digunakan ketika front-end langsung mengakses backend deployment.
 
 ### Setup Back-End
@@ -262,4 +262,3 @@ Dokumentasi teknis lebih detail tersedia pada file berikut:
 - Database PostgreSQL berada di AWS RDS.
 - File audio rekaman pengguna disimpan pada AWS S3.
 - Model Machine Learning diakses melalui API inference yang sudah di-deploy.
-
