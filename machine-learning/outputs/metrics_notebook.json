@@ -1,0 +1,14 @@
+{
+  "test_loss": 0.08873412013053894,
+  "test_accuracy": 1.0,
+  "test_mae": 0.00844606850296259,
+  "thresholds": {
+    "accuracy": 0.85,
+    "mae": 0.02
+  },
+  "meets": {
+    "accuracy": true,
+    "mae": true
+  },
+  "all_ok": true
+}

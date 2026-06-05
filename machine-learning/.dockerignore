@@ -1,0 +1,23 @@
+# Keep Cloud Run / Docker builds fast (do not upload large local assets)
+
+# Data & notebooks (not needed for inference image)
+data/
+notebooks/
+
+# Training/eval outputs not required for serving
+outputs/logs/
+outputs/saved_model/
+outputs/*.tfevents*
+
+# Local / venv
+.venv/
+__pycache__/
+*.pyc
+
+# Git
+.git/
+.gitignore
+
+# OS/editor
+.DS_Store
+.vscode/

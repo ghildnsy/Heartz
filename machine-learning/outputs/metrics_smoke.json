@@ -1,0 +1,15 @@
+{
+  "num_samples": 50,
+  "accuracy": 1.0,
+  "mae": 0.010463851690292358,
+  "thresholds": {
+    "accuracy": 0.85,
+    "mae": 0.02
+  },
+  "meets_thresholds": true,
+  "paths": {
+    "data_dir": "D:\\Hemkerr\\Heartz\\machine-learning\\data\\clean_wav",
+    "model_path": "D:\\Hemkerr\\Heartz\\machine-learning\\outputs\\heartz_model.keras",
+    "class_names_path": "D:\\Hemkerr\\Heartz\\machine-learning\\outputs\\class_names.json"
+  }
+}
