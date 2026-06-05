@@ -1,0 +1,33 @@
+version: 0.2
+
+env:
+  variables:
+    AWS_REGION: ap-southeast-2
+    ECR_REPO_NAME: heartz
+
+phases:
+  pre_build:
+    commands:
+      - echo "[pre_build] Resolving account + ECR URI"
+      - ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+      - ECR_URI=${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO_NAME}
+      - echo "ECR_URI=${ECR_URI}"
+      - IMAGE_TAG=build-${CODEBUILD_BUILD_NUMBER}
+      - echo "IMAGE_TAG=${IMAGE_TAG}"
+      - echo "[pre_build] Logging into ECR"
+      - aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+
+  build:
+    commands:
+      - echo "[build] Docker build (context: machine-learning/)"
+      - docker build -t ${ECR_URI}:${IMAGE_TAG} -f machine-learning/api/Dockerfile.sagemaker machine-learning
+
+  post_build:
+    commands:
+      - echo "[post_build] Pushing image"
+      - docker push ${ECR_URI}:${IMAGE_TAG}
+      - printf '{"imageUri":"%s"}' ${ECR_URI}:${IMAGE_TAG} > imageDetail.json
+
+artifacts:
+  files:
+    - imageDetail.json

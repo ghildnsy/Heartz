@@ -1,0 +1,21 @@
+FROM python:3.11-slim
+
+# SageMaker expects the container to listen on port 8080 by default.
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+COPY requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY api ./api
+RUN mkdir -p ./outputs
+COPY outputs/heartz_model.keras ./outputs/heartz_model.keras
+COPY outputs/class_names.json ./outputs/class_names.json
+COPY outputs/heartz_config.json ./outputs/heartz_config.json
+
+EXPOSE 8080
+
+ENTRYPOINT ["python", "-m", "api.sagemaker_entrypoint"]
+CMD ["serve"]

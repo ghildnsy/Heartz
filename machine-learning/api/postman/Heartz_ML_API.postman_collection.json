@@ -1,0 +1,62 @@
+{
+"info": {
+"_postman_id": "b7edc3ee-4a0f-4f2b-9e6f-9d24f2d9b7a1",
+"name": "Heartz ML API",
+"description": "Heartz production inference API (API Gateway -> Lambda -> SageMaker). POST /predict with raw WAV bytes. Optional target via ?target=<label>.",
+"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+},
+"item": [
+{
+"name": "Base URL",
+"request": {
+"method": "GET",
+"header": [],
+"url": "https://30gz15d4bh.execute-api.ap-southeast-2.amazonaws.com/prod",
+"description": "Production base URL for Heartz ML API(auth Required)."
+},
+"response": []
+},
+{
+"name": "Predict (Verify - with target)",
+"request": {
+"method": "POST",
+"header": [
+{
+"key": "Content-Type",
+"value": "audio/wav"
+}
+],
+"body": {
+"mode": "file",
+"file": {
+"src": ""
+}
+},
+"url": "https://30gz15d4bh.execute-api.ap-southeast-2.amazonaws.com/prod/predict?target=Ma",
+"description": "Verification mode. Adds ?target=<label> and returns extra fields: match, score/target_confidence, margin, target_rank, threshold, pass_soft, pass_strict."
+},
+"response": []
+},
+{
+"name": "Predict (Classify - no target)",
+"request": {
+"method": "POST",
+"header": [
+{
+"key": "Content-Type",
+"value": "audio/wav"
+}
+],
+"body": {
+"mode": "file",
+"file": {
+"src": ""
+}
+},
+"url": "https://30gz15d4bh.execute-api.ap-southeast-2.amazonaws.com/prod/predict",
+"description": "Classification only. Send raw WAV bytes as the request body (Postman: Body -> binary)."
+},
+"response": []
+}
+]
+}

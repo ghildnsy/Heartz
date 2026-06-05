@@ -5,17 +5,34 @@ front-end/dist/
 # Backend
 back-end/node_modules/
 
-# Machine Learning
+# --- Python / virtualenv ---
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.pyd
+
+# --- VS Code ---
+.vscode/
+
+# --- Agent instructions (repo-local) ---
+AGENTS.md
+
+# --- Machine Learning Project ---
+# Ignore large local audio datasets
 machine-learning/data/
-machine-learning/outputs/
 
-# Model files
-*.keras
-*.h5
-*.pkl
+# Ignore AWS SAM build outputs
+machine-learning/infra/.aws-sam/
 
-# skills
-skills
+# Ignore temporary deployment artifacts
+machine-learning/outputs/latest_image_uri.txt
+
+# Local development utility scripts
+machine-learning/demo_run.ps1
+machine-learning/infer.py
+machine-learning/evaluate.py
 
 # Audio files
 *.wav
