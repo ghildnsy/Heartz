@@ -193,10 +193,6 @@ export const authApi = {
 export const predictApi = {
   warmup: () =>
     request('/api/predict/warmup', {
-      headers: {
-        'Cache-Control': 'no-cache',
-        Pragma: 'no-cache',
-      },
       params: {
         _: Date.now(),
       },
