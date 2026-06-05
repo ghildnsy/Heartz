@@ -56,7 +56,10 @@ machine-learning/
 Endpoint (current deploy):
 
 - Region: `ap-southeast-2`
-- URL: `https://30gz15d4bh.execute-api.ap-southeast-2.amazonaws.com/prod/predict`
+- URL Predict: `https://30gz15d4bh.execute-api.ap-southeast-2.amazonaws.com/prod/predict`
+- URL Health: `https://30gz15d4bh.execute-api.ap-southeast-2.amazonaws.com/prod/health` (atau `/prod/ping`)
+
+### 1. Endpoint Predict (POST)
 
 Kontrak request:
 
@@ -90,6 +93,33 @@ Catatan motivasi:
 - Jika `GEMINI_API_KEY` tersedia di container, `motivational_text` dihasilkan via Gemini **untuk semua mode** (classify & verify/latihan target).
 - Jika Gemini gagal/timeout/masih busy, API akan mengembalikan **HTTP 503** (tanpa fallback template), supaya behavior sesuai requirement “Gemini wajib keluar”.
 - Guardrail verifikasi: jika `pass_strict=false`, output Gemini **tidak boleh memuji**; jika terdeteksi memuji, API mengembalikan **HTTP 503** dan client perlu retry.
+
+### 2. Endpoint Health & Ping (GET)
+
+Mengecek status kesehatan server Lambda proxy dan koneksi real-time ke SageMaker endpoint.
+
+Kontrak request:
+
+- Method: `GET`
+- Path: `/prod/health` (atau `/prod/ping`)
+
+Contoh (curl):
+
+```bash
+curl -X GET "https://30gz15d4bh.execute-api.ap-southeast-2.amazonaws.com/prod/health"
+```
+
+Contoh Response (200 OK):
+
+```json
+{
+  "status": "ok",
+  "sagemaker_endpoint": "heartz",
+  "sagemaker_status": "InService",
+  "region": "ap-southeast-2"
+}
+```
+*(Catatan: Jika Lambda proxy tidak memiliki izin IAM `sagemaker:DescribeEndpoint`, response akan tetap bernilai `200 OK` dengan keterangan `sagemaker_status: "unknown (describe_endpoint AccessDenied)"`).*
 
 ## Cara pakai (tim backend)
 
