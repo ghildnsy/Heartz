@@ -1,7 +1,37 @@
+## Akses dari FE/BE/Postman (tanpa AWS signing)
+
+SageMaker Runtime (`InvokeEndpoint`) idealnya dipanggil pakai IAM/SigV4 (AWS SDK/CLI). Browser/Postman itu ribet kalau harus signing.
+Pola yang paling simpel untuk dipakai FE/BE:
+**API Gateway → Lambda → SageMaker endpoint**.
+
+Repo ini menyediakan contoh proxy (SAM):
+- `machine-learning/infra/sagemaker_proxy_lambda.py`
+- `machine-learning/infra/template.yaml`
+
+Kalau deploy infra via CLI mentok `AccessDenied` (mis. `s3:PutObject`, `cloudformation:*`, `apigateway:*`), berarti kredensial AWS yang dipakai belum punya izin untuk provisioning infra. Dalam kondisi itu, workaround paling cepat adalah patch Lambda/API Gateway yang sudah ada.
+
+Repo ini juga menyediakan file handler untuk dipakai sebagai kode Lambda (drop-in untuk function `heartz-api-wrapper`):
+- `machine-learning/infra/lambda_function.py`
+
+Kontrak proxy:
+- `POST /predict`
+- Body: raw WAV bytes
+- Header: `Content-Type: audio/wav`
+- Opsional verifikasi target:
+	- query string `?target=A`, atau
+	- header `x-heartz-target: A`
+Invoke (contoh curl):
+
+```bash
+curl -X POST "https://<api-id>.execute-api.<region>.amazonaws.com/prod/predict?target=A" \
+	-H "Content-Type: audio/wav" \
+	--data-binary "@A_0001.wav"
+```
 # Heartz ML — Production Inference (AWS SageMaker)
 
-Repo ini berisi model + container inference untuk produksi lewat **AWS SageMaker Real-time Endpoint**.
-Tujuan README ini: tim backend bisa langsung pakai endpoint (tanpa bahas run/test lokal).
+Dokumen ini menjelaskan **cara pakai API produksi** Heartz yang sudah dideploy:
+**API Gateway → Lambda → SageMaker endpoint**.
+Targetnya: FE/BE/Postman bisa akses tanpa AWS SigV4 signing.
 
 ## Struktur
 
@@ -20,6 +50,46 @@ machine-learning/
 ├── buildspec.sagemaker.yml
 └── requirements.txt
 ```
+
+## Production API (public HTTP, tanpa SigV4)
+
+Endpoint (current deploy):
+
+- Region: `ap-southeast-2`
+- URL: `https://30gz15d4bh.execute-api.ap-southeast-2.amazonaws.com/prod/predict`
+
+Kontrak request:
+
+- Method: `POST`
+- Path: `/prod/predict`
+- Header: `Content-Type: audio/wav` (atau `application/octet-stream`)
+- Body: **raw bytes** file WAV (bukan multipart)
+- Optional (mode latihan target):
+	- query string `?target=Ma`
+	- atau header `x-heartz-target: Ma`
+
+Contoh (curl):
+
+```bash
+curl -X POST "https://30gz15d4bh.execute-api.ap-southeast-2.amazonaws.com/prod/predict?target=Ma" \
+	-H "Content-Type: audio/wav" \
+	--data-binary "@Ma_0001.wav"
+```
+
+Mode response:
+
+1) **Classify (tanpa target)**
+- `predicted_class`, `confidence`, `top_k`, `motivational_text`
+
+2) **Verify / latihan target (dengan target)**
+- Semua field classify + tambahan:
+	`target`, `match`, `score`/`target_confidence`, `margin`, `target_rank`, `threshold`, `pass_soft`, `pass_strict`
+
+Catatan motivasi:
+
+- Jika `GEMINI_API_KEY` tersedia di container, `motivational_text` dihasilkan via Gemini **untuk semua mode** (classify & verify/latihan target).
+- Jika Gemini gagal/timeout/masih busy, API akan mengembalikan **HTTP 503** (tanpa fallback template), supaya behavior sesuai requirement “Gemini wajib keluar”.
+- Guardrail verifikasi: jika `pass_strict=false`, output Gemini **tidak boleh memuji**; jika terdeteksi memuji, API mengembalikan **HTTP 503** dan client perlu retry.
 
 ## Cara pakai (tim backend)
 
@@ -43,7 +113,7 @@ Mode verifikasi (latihan target):
 
 Threshold default: `TARGET_SCORE_THRESHOLD=0.60`
 
-### Invoke via AWS CLI
+### Invoke via AWS CLI (langsung ke SageMaker, pakai IAM)
 
 Set variable (sekali saja):
 
@@ -100,11 +170,11 @@ console.log(jsonText);
 
 ## Dokumentasi request (Postman)
 
-Kalau tim kamu butuh “documentation page” ala Postman, file Postman sudah disiapkan:
+Postman yang ada di repo ini diset untuk **production API Gateway URL** (public HTTP) dan mengirim body WAV sebagai binary:
 - [machine-learning/api/postman/Heartz_ML_API.postman_collection.json](machine-learning/api/postman/Heartz_ML_API.postman_collection.json)
 - [machine-learning/api/postman/Heartz_ML_API.postman_environment.json](machine-learning/api/postman/Heartz_ML_API.postman_environment.json)
 
-Catatan: Postman ini paling cocok untuk **backend proxy API** (public HTTP) yang nanti invoke SageMaker.
+Di environment Postman, update variable `wavFilePath` ke path file `.wav` di laptop kamu.
 
 ## Training (internal tim ML)
 
@@ -118,96 +188,13 @@ outputs/class_names.json
 outputs/heartz_config.json
 ```
 
-## Deploy / redeploy (ops)
+## Ops note (ringkas)
 
-Jalur deploy yang dipakai: **ECR → SageMaker (custom container)**.
+Yang dipakai di produksi:
 
-### 1) Build + push image (tanpa Docker lokal)
-
-Pakai AWS CodeBuild dengan buildspec:
-- [machine-learning/buildspec.sagemaker.yml](machine-learning/buildspec.sagemaker.yml)
-
-Buildspec ini:
-- region: `ap-southeast-2`
-- repo ECR: `heartz`
-- image tag: `build-<CODEBUILD_BUILD_NUMBER>` (aman untuk tag immutability)
-
-### 2) SageMaker real-time endpoint
-
-Di SageMaker Console:
-- Create **Model** (container image dari ECR)
-- Create **Endpoint configuration** (mulai dari 1 instance CPU)
-- Create **Endpoint** → tunggu `InService`
-
-Untuk production di SageMaker, pakai entrypoint khusus:
-- `GET /ping`
-- `POST /invocations` (body = raw bytes WAV)
-
-### Deploy ke AWS SageMaker (real-time endpoint, custom container)
-
-Poin penting (biar tidak bingung): di SageMaker kamu biasanya deploy **container inference** (yang di dalamnya ada code preprocessing + load model + predict). Jadi bukan cuma “model doang”.
-
-Di repo ini sudah disiapkan entrypoint khusus SageMaker:
-- Healthcheck: `GET /ping`
-- Inference: `POST /invocations` (body = raw bytes file WAV)
-
-File-nya:
-- [machine-learning/api/sagemaker.py](machine-learning/api/sagemaker.py)
-- [machine-learning/api/Dockerfile.sagemaker](machine-learning/api/Dockerfile.sagemaker)
-
-#### Step-by-step (bahasa bayi)
-
-0) Pastikan model export sudah ada:
-- `outputs/heartz_model.keras`
-- `outputs/class_names.json`
-
-1) Build Docker image (dari folder `machine-learning/`):
-
-```bash
-docker build -t heartz-sagemaker -f api/Dockerfile.sagemaker .
-```
-
-##### Kalau kamu TIDAK bisa install Docker di laptop (pakai AWS CodeBuild)
-
-Intinya: CodeBuild itu “mesin AWS” yang bisa build Docker image buat kamu.
-
-Syarat:
-- Repo kamu harus bisa diakses oleh CodeBuild (paling gampang: GitHub/CodeCommit). Kalau belum, kamu bisa upload source sebagai `.zip` ke S3.
-
-Yang sudah disiapkan di repo ini:
-- Build spec: [machine-learning/buildspec.sagemaker.yml](machine-learning/buildspec.sagemaker.yml)
-
-Catatan penting: Dockerfile akan `COPY outputs/heartz_model.keras` dan `outputs/class_names.json`.
-Jadi pastikan folder `machine-learning/outputs/` itu ikut ke-upload ke source CodeBuild (atau sudah ada di repo).
-
-Langkah bayi (Console):
-
-1) Pastikan ECR repo sudah ada (misal `heartz-sagemaker`) di region `ap-southeast-2`.
-
-2) Buka AWS Console → **CodeBuild** → **Create build project**
-	 - Project name: `heartz-sagemaker-build`
-	 - Source:
-		 - Kalau repo ada di GitHub: pilih GitHub lalu connect repo
-		 - Kalau pakai S3: upload zip source repo, lalu pilih S3 object itu
-	 - Environment:
-		 - Managed image: `Ubuntu`
-		 - Runtime: `Standard`
-		 - Image: pilih yang terbaru (contoh `aws/codebuild/standard:7.0`)
-		 - **Centang**: `Privileged` (WAJIB supaya bisa build Docker)
-	 - Service role:
-		 - Create new role (biar gampang)
-		 - Role harus punya izin push ke ECR + `sts:GetCallerIdentity`
-	 - Buildspec:
-		 - Pilih `Use a buildspec file`
-		 - Path: `machine-learning/buildspec.sagemaker.yml`
-	 - Create project
-
-3) Klik **Start build**
-	 - Kalau sukses, image otomatis ke-push ke ECR sebagai `:latest`.
-
-Habis itu kamu lanjut ke step “Deploy di SageMaker (Console)”, pakai image dari ECR.
-
-2) Test lokal (optional tapi disarankan):
+- SageMaker endpoint name: `heartz`
+- Proxy infra (SAM): [machine-learning/infra/template.yaml](machine-learning/infra/template.yaml)
+- Lambda handler: [machine-learning/infra/sagemaker_proxy_lambda.py](machine-learning/infra/sagemaker_proxy_lambda.py)
 
 ```bash
 docker run --rm -p 8080:8080 heartz-sagemaker

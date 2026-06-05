@@ -17,4 +17,5 @@ COPY outputs/heartz_config.json ./outputs/heartz_config.json
 
 EXPOSE 8080
 
-CMD ["uvicorn", "api.sagemaker:app", "--host", "0.0.0.0", "--port", "8080"]
+ENTRYPOINT ["python", "-m", "api.sagemaker_entrypoint"]
+CMD ["serve"]

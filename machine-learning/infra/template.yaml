@@ -1,0 +1,68 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Heartz - API Gateway + Lambda proxy for SageMaker endpoint
+
+Parameters:
+  EndpointName:
+    Type: String
+    Default: heartz
+    Description: SageMaker real-time endpoint name to invoke
+
+Globals:
+  Function:
+    Runtime: python3.12
+    Timeout: 30
+    MemorySize: 512
+    Tracing: Active
+
+Resources:
+  HeartzApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: prod
+      BinaryMediaTypes:
+        - audio~1wav
+        - audio~1x-wav
+        - application~1octet-stream
+
+  HeartzProxyFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: sagemaker_proxy_lambda.handler
+      Environment:
+        Variables:
+          SAGEMAKER_ENDPOINT_NAME: !Ref EndpointName
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - sagemaker:InvokeEndpoint
+                - sagemaker:DescribeEndpoint
+              Resource:
+                - !Sub arn:aws:sagemaker:${AWS::Region}:${AWS::AccountId}:endpoint/${EndpointName}
+      Events:
+        Predict:
+          Type: Api
+          Properties:
+            RestApiId: !Ref HeartzApi
+            Path: /predict
+            Method: POST
+        Health:
+          Type: Api
+          Properties:
+            RestApiId: !Ref HeartzApi
+            Path: /health
+            Method: GET
+        Ping:
+          Type: Api
+          Properties:
+            RestApiId: !Ref HeartzApi
+            Path: /ping
+            Method: GET
+
+Outputs:
+  ApiUrl:
+    Description: Invoke URL
+    Value: !Sub https://${HeartzApi}.execute-api.${AWS::Region}.amazonaws.com/prod/predict

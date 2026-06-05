@@ -14,3 +14,17 @@ __pycache__/
 # --- Agent instructions (repo-local) ---
 AGENTS.md
 
+# --- Machine Learning Project ---
+# Ignore large local audio datasets
+machine-learning/data/
+
+# Ignore AWS SAM build outputs
+machine-learning/infra/.aws-sam/
+
+# Ignore temporary metrics, prediction logs, and deployment artifacts
+machine-learning/outputs/latest_image_uri.txt
+
+# Local development utility scripts
+machine-learning/demo_run.ps1
+machine-learning/infer.py
+machine-learning/evaluate.py
